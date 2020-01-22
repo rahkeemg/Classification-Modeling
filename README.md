@@ -1917,6 +1917,35 @@ print(grid.best_estimator_)
     [Parallel(n_jobs=1)]: Done  75 out of  75 | elapsed: 105.7min finished
     
 
+    {'C': 1000, 'gamma': 0.01, 'kernel': 'rbf'}
+    SVC(C=1000, cache_size=200, class_weight=None, coef0=0.0,
+      decision_function_shape='ovr', degree=3, gamma=0.01, kernel='rbf',
+      max_iter=-1, probability=False, random_state=None, shrinking=True,
+      tol=0.001, verbose=False)
+    
+
+
+```python
+# print best parameter after tuning 
+print(grid.best_params_) 
+  
+```
+
+    {'C': 1000, 'gamma': 0.01, 'kernel': 'rbf'}
+    
+
+
+```python
+# print how our model looks after hyper-parameter tuning 
+print(grid.best_estimator_)
+```
+
+    SVC(C=1000, cache_size=200, class_weight=None, coef0=0.0,
+      decision_function_shape='ovr', degree=3, gamma=0.01, kernel='rbf',
+      max_iter=-1, probability=False, random_state=None, shrinking=True,
+      tol=0.001, verbose=False)
+    
+
 # Summary
 
 In this project, we sought to create a classification model using K-Nearest Neighbors and Decision Trees.  The packages used to implement these models was `sklearn`.
