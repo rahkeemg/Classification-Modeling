@@ -1,7 +1,17 @@
 
 # Classification Modeling 
 
+# Abstract
+
+In this project, we will explore classification modeling using K-nearest neighbors (KNN) and Decision Trees.  We will also be using the dataset below to see how we can build and tune our models for optimal performance.  The data 
+
+
+### Dataset
+
 In this project, we will build a classification model using K-Nearest Neighbors(KNN) and Decision Trees, utilizing the following dataset:  https://www.openml.org/d/1590
+The information from the dataset was originally derived from the Census Bureay surveys in 1996.  
+
+For more information on the features available within the dataset, refer to the link above.
 
 ### Import files
 
@@ -25,10 +35,6 @@ from pydotplus import graph_from_dot_data
 %load_ext autoreload
 %autoreload
 ```
-
-    The autoreload extension is already loaded. To reload it, use:
-      %reload_ext autoreload
-    
 
 
 ```python
@@ -694,7 +700,7 @@ data.head()
 
 
 ```python
-sns.catplot(x='sex', kind='count', data=data, aspect=2.5)
+sns.catplot(x='class', kind='count', data=data, aspect=2.5)
 plt.xticks(rotation=45)
 plt.show()
 ```
@@ -705,7 +711,7 @@ plt.show()
 
 
 ```python
-sns.catplot(x='sex', kind='count', hue='class', data=data, aspect=2.5, )
+sns.catplot(x='sex', kind='count', data=data, aspect=2.5)
 plt.xticks(rotation=45)
 plt.show()
 ```
@@ -716,7 +722,7 @@ plt.show()
 
 
 ```python
-sns.catplot(x='education', kind='count', hue='sex', data=data, aspect=2.5)
+sns.catplot(x='sex', kind='count', hue='class', data=data, aspect=2.5, )
 plt.xticks(rotation=45)
 plt.show()
 ```
@@ -727,7 +733,7 @@ plt.show()
 
 
 ```python
-sns.catplot(x='occupation', kind='count', hue='sex', data=data, aspect=2.5)
+sns.catplot(x='education', kind='count', hue='sex', data=data, aspect=2.5)
 plt.xticks(rotation=45)
 plt.show()
 ```
@@ -738,7 +744,7 @@ plt.show()
 
 
 ```python
-sns.catplot(x='occupation', kind='count', hue='class', data=data, aspect=2.5)
+sns.catplot(x='occupation', kind='count', hue='sex', data=data, aspect=2.5)
 plt.xticks(rotation=45)
 plt.show()
 ```
@@ -749,13 +755,24 @@ plt.show()
 
 
 ```python
-sns.catplot(x='education', kind='count', hue='class', data=data, aspect=2.5)
+sns.catplot(x='occupation', kind='count', hue='class', data=data, aspect=2.5)
 plt.xticks(rotation=45)
 plt.show()
 ```
 
 
 ![png](Classification_Notebook_files/Classification_Notebook_19_0.png)
+
+
+
+```python
+sns.catplot(x='education', kind='count', hue='class', data=data, aspect=2.5)
+plt.xticks(rotation=45)
+plt.show()
+```
+
+
+![png](Classification_Notebook_files/Classification_Notebook_20_0.png)
 
 
 # Classification modeling
@@ -1089,9 +1106,12 @@ scaled_data_test = scaler.transform(x_test)
       # Remove the CWD from sys.path while we load stuff.
     
 
+#### Further investigation into the nature of the data
+
 
 ```python
 x_train.shape, x_test.shape
+sns.barplot()
 ```
 
 
@@ -1100,6 +1120,96 @@ x_train.shape, x_test.shape
     ((31747, 14), (17095, 14))
 
 
+
+
+```python
+## Based on the info below, most of the rows are 0 in our train data
+zero_count = np.where(y_train == 0)[0].shape[0]
+one_count = y_train.shape[0] - zero_count
+print(f"Total rows with 0: \t{zero_count}")
+print(f"Total rows with 1:  \t{one_count}")
+print(f"Total rows in y_train: {y_train.shape[0]}")
+```
+
+    Total rows with 0: 	24087
+    Total rows with 1:  	7660
+    Total rows in y_train: 31747
+    
+
+
+```python
+zero_count = np.where(y_test == 0)[0].shape[0]
+one_count = y_test.shape[0] - zero_count
+print(f"Total rows with 0: \t{zero_count}")
+print(f"Total rows with 1:  \t{one_count}")
+print(f"Total rows in y_test:  {y_test.shape[0]}")
+```
+
+    Total rows with 0: 	13068
+    Total rows with 1:  	4027
+    Total rows in y_test:  17095
+    
+
+
+```python
+## Based on the information below, our dataset is highly imbalanced
+zero_count = np.where(target == 0)[0].shape[0]
+one_count = target.shape[0] - zero_count
+print(f"Total rows with 0: \t{zero_count}")
+print(f"Total rows with 1:  \t{one_count}")
+print(f"Total rows in target:  {target.shape[0]}")
+```
+
+    Total rows with 0: 	37155
+    Total rows with 1:  	11687
+    Total rows in target:  48842
+    
+
+Here, we are using PCA to break down the data into two principle components, so that the data maybe plotted to see if there are any trends or patterns available that may have an impact on the performance of our models.  
+
+In the following cells below, we will graph the data before and after applying the standardized scalar fro scikit learn
+
+
+```python
+### PCA Plot
+sns.set(rc={'figure.figsize':(13,8)})
+
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2)
+
+pca_values = pca.fit_transform(x_train)
+
+sns.scatterplot(x=pca_values[:,0], y=pca_values[:,1], hue=y_train, palette='bright')
+plt.title('Training Data Before Standardized Scaler')
+plt.show()
+```
+
+
+![png](Classification_Notebook_files/Classification_Notebook_36_0.png)
+
+
+In the graph above, there seems to be a fair amount of separation between the different classes we are attempting to predict.
+
+After transforming the data, it becomes more visible that there is a high level of correlation between the different targets that we are attempting to predict.
+
+
+```python
+### PCA Plot
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2)
+
+pca_values = pca.fit_transform(scaled_data_train)
+
+sns.scatterplot(x=pca_values[:,0], y=pca_values[:,1], hue=y_train, alpha=0.95, palette='bright')
+plt.title('Standardized Training Data')
+plt.show()
+```
+
+
+![png](Classification_Notebook_files/Classification_Notebook_39_0.png)
+
+
+Now that the data transformation is complete, the next step is to generate the learning models and see how the scaling affects the models.
 
 ## K-nearest neighbors modeling
 
@@ -1119,58 +1229,6 @@ def generate_knn(X_train, y_train, X_test, y_test, min_k=1, max_k=25):
           
     return neighbors
 ```
-
-
-```python
-list_of_neighbors = generate_knn(x_train, y_train, x_test, y_test, max_k=50)
-```
-
-
-```python
-# Print the last 5 elements of the list
-list_of_neighbors[-5:]
-```
-
-
-
-
-    [{'precision': 0.9026217228464419,
-      'recall': 0.17953811770548794,
-      'accuracy': 0.8021643755484059,
-      'f1': 0.29950289975144984,
-      'f_b': 0.49993085327064035,
-      'error': 0.19783562445159403,
-      'k': 46},
-     {'precision': 0.8990147783251231,
-      'recall': 0.18127638440526447,
-      'accuracy': 0.8023398654577362,
-      'f1': 0.3017152304195082,
-      'f_b': 0.5017182130584192,
-      'error': 0.19766013454226383,
-      'k': 47},
-     {'precision': 0.9064102564102564,
-      'recall': 0.17556493667742737,
-      'accuracy': 0.8015209125475286,
-      'f1': 0.2941543582275848,
-      'f_b': 0.49461312438785504,
-      'error': 0.19847908745247148,
-      'k': 48},
-     {'precision': 0.9021329987452948,
-      'recall': 0.1785448224484728,
-      'accuracy': 0.8019303890026324,
-      'f1': 0.2980928689883913,
-      'f_b': 0.4982674982674982,
-      'error': 0.19806961099736764,
-      'k': 49},
-     {'precision': 0.9116094986807388,
-      'recall': 0.17159175564936677,
-      'accuracy': 0.8009359461830945,
-      'f1': 0.2888192267502613,
-      'f_b': 0.4894460971809038,
-      'error': 0.19906405381690553,
-      'k': 50}]
-
-
 
 
 ```python
@@ -1198,33 +1256,81 @@ def graph_knn_metrics(list_of_neighbors, fsize=(15,8)):
             plt.ylabel('Score')
 ```
 
+#### Baseline model without feature scaling
+
+There is an upward and downward trend in our graphs. This is the result of low correlation in our untransformed, train-test split
+
+
+```python
+list_of_neighbors = generate_knn(x_train, y_train, x_test, y_test, max_k=50)
+```
+
 
 ```python
 graph_knn_metrics(list_of_neighbors, fsize=(20,5))
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_35_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_46_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_35_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_46_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_35_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_46_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_35_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_46_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_35_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_46_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_35_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_46_5.png)
+
+
+#### Model with feature scaling
+
+By introducing feature scaling, the results of our KNN model has had an overall increase in the different metrics used.
+It was interesting to see that the precision of the model began to plateau as a result of the introduction of scaling our training data and the results of the model are more consistent now.  
+
+
+```python
+list_of_neighbors = generate_knn(scaled_data_train, y_train, scaled_data_test, y_test, max_k=50)
+```
+
+
+```python
+graph_knn_metrics(list_of_neighbors, fsize=(20,5))
+```
+
+
+![png](Classification_Notebook_files/Classification_Notebook_49_0.png)
+
+
+
+![png](Classification_Notebook_files/Classification_Notebook_49_1.png)
+
+
+
+![png](Classification_Notebook_files/Classification_Notebook_49_2.png)
+
+
+
+![png](Classification_Notebook_files/Classification_Notebook_49_3.png)
+
+
+
+![png](Classification_Notebook_files/Classification_Notebook_49_4.png)
+
+
+
+![png](Classification_Notebook_files/Classification_Notebook_49_5.png)
 
 
 ## Decision Tree Modeling
@@ -1244,12 +1350,12 @@ calc_metrics(y_test, y_preds)
 
 
 
-    {'precision': 0.6055871212121212,
-     'recall': 0.635212316861187,
-     'accuracy': 0.8166130447499269,
-     'f1': 0.6200460550236334,
-     'f_b': 0.6112890120919563,
-     'error': 0.18338695525007312}
+    {'precision': 0.6092825005919962,
+     'recall': 0.6389371740749938,
+     'accuracy': 0.8184264404796724,
+     'f1': 0.6237575757575757,
+     'f_b': 0.614991156365027,
+     'error': 0.18157355952032758}
 
 
 
@@ -1278,6 +1384,7 @@ def graph_dt_metrics(list_of_metrics, fsize=(15,8), title='', x_label=''):
         plt.title(f'{title}\n{key.upper()}')
         plt.xlabel(x_label)
         plt.ylabel('score')
+        plt.show()
 ```
 
 
@@ -1296,90 +1403,90 @@ max_feat_metrics
 
 
 
-    [{'precision': 0.5831348261076703,
-      'recall': 0.6078966972932704,
-      'accuracy': 0.8052646972799065,
-      'f1': 0.595258358662614,
-      'f_b': 0.5879244920505308,
-      'error': 0.1947353027200936},
-     {'precision': 0.6103736479842674,
-      'recall': 0.616588030792153,
-      'accuracy': 0.8169640245685873,
-      'f1': 0.6134651019147622,
-      'f_b': 0.611606483077984,
-      'error': 0.1830359754314127},
-     {'precision': 0.6058608058608058,
-      'recall': 0.6160913831636454,
-      'accuracy': 0.8151506288388418,
-      'f1': 0.6109332676680621,
-      'f_b': 0.6078796491400009,
-      'error': 0.18484937116115824},
-     {'precision': 0.6171538092956397,
-      'recall': 0.6396821455177552,
-      'accuracy': 0.8216437554840597,
-      'f1': 0.628216071210828,
-      'f_b': 0.6215316315205327,
-      'error': 0.17835624451594034},
-     {'precision': 0.6182123978856319,
-      'recall': 0.6389371740749938,
-      'accuracy': 0.82199473530272,
-      'f1': 0.6284039565270485,
-      'f_b': 0.6222490931076179,
-      'error': 0.1780052646972799},
-     {'precision': 0.6154031287605295,
-      'recall': 0.6349639930469332,
-      'accuracy': 0.820532319391635,
-      'f1': 0.6250305548765583,
-      'f_b': 0.619218288371192,
-      'error': 0.17946768060836502},
-     {'precision': 0.6078755010610705,
-      'recall': 0.6401787931462627,
-      'accuracy': 0.8179584673881252,
-      'f1': 0.6236090953072085,
-      'f_b': 0.6140726978228764,
-      'error': 0.1820415326118748},
-     {'precision': 0.6140392908481074,
-      'recall': 0.6364539359324559,
-      'accuracy': 0.8201228429365311,
-      'f1': 0.6250457261309597,
-      'f_b': 0.6183950200260581,
-      'error': 0.17987715706346885},
-     {'precision': 0.6111763324724113,
-      'recall': 0.6463868885026074,
-      'accuracy': 0.8198303597543142,
-      'f1': 0.6282886797006999,
-      'f_b': 0.6179081802212409,
-      'error': 0.18016964024568588},
-     {'precision': 0.6149439006922893,
-      'recall': 0.6396821455177552,
-      'accuracy': 0.8207663059374086,
-      'f1': 0.6270691333982473,
-      'f_b': 0.6197372852812394,
-      'error': 0.1792336940625914},
-     {'precision': 0.6135922330097088,
-      'recall': 0.6277626024335734,
-      'accuracy': 0.8191868967534367,
-      'f1': 0.6205965386031668,
-      'f_b': 0.616374896376847,
-      'error': 0.18081310324656333},
-     {'precision': 0.6055175666116482,
-      'recall': 0.6376955550037249,
-      'accuracy': 0.816788534659257,
-      'f1': 0.6211901306240928,
-      'f_b': 0.6116907245962555,
-      'error': 0.1832114653407429},
-     {'precision': 0.6115193173737853,
-      'recall': 0.6406754407747703,
-      'accuracy': 0.8194793799356537,
-      'f1': 0.6257579432452097,
-      'f_b': 0.6171362962254222,
-      'error': 0.1805206200643463},
-     {'precision': 0.6071942446043166,
+    [{'precision': 0.6017848528702364,
+      'recall': 0.6195679165631984,
+      'accuracy': 0.8138052062006434,
+      'f1': 0.6105469227945676,
+      'f_b': 0.6052593275435447,
+      'error': 0.18619479379935655},
+     {'precision': 0.6103801169590644,
+      'recall': 0.6220511547057362,
+      'accuracy': 0.8174319976601345,
+      'f1': 0.6161603738777519,
+      'f_b': 0.612679156679548,
+      'error': 0.18256800233986545},
+     {'precision': 0.6125363020329139,
+      'recall': 0.6285075738763347,
+      'accuracy': 0.8188359169347762,
+      'f1': 0.6204191690158108,
+      'f_b': 0.6156652882510338,
+      'error': 0.18116408306522375},
+     {'precision': 0.6158699344819218,
+      'recall': 0.6302458405761112,
+      'accuracy': 0.8202983328458614,
+      'f1': 0.6229749631811488,
+      'f_b': 0.6186924089512945,
+      'error': 0.17970166715413863},
+     {'precision': 0.6154594069032572,
       'recall': 0.6287558976905885,
-      'accuracy': 0.8167300380228137,
-      'f1': 0.6177869952421619,
-      'f_b': 0.611387453518134,
-      'error': 0.1832699619771863}]
+      'accuracy': 0.8200058496636443,
+      'f1': 0.6220366048397001,
+      'f_b': 0.6180735243860762,
+      'error': 0.17999415033635566},
+     {'precision': 0.6131178707224335,
+      'recall': 0.6406754407747703,
+      'accuracy': 0.8201228429365311,
+      'f1': 0.6265938069216758,
+      'f_b': 0.6184380842801669,
+      'error': 0.17987715706346885},
+     {'precision': 0.6140224934194783,
+      'recall': 0.6371989073752173,
+      'accuracy': 0.8201813395729746,
+      'f1': 0.6253960516695101,
+      'f_b': 0.6185219110061226,
+      'error': 0.17981866042702543},
+     {'precision': 0.6166868198307134,
+      'recall': 0.6332257263471567,
+      'accuracy': 0.8208832992102955,
+      'f1': 0.6248468512619455,
+      'f_b': 0.619925122769485,
+      'error': 0.1791167007897046},
+     {'precision': 0.6101895734597157,
+      'recall': 0.6394338217035014,
+      'accuracy': 0.8188359169347762,
+      'f1': 0.6244695040620832,
+      'f_b': 0.6158224518103984,
+      'error': 0.18116408306522375},
+     {'precision': 0.6103958035288507,
+      'recall': 0.6357089644896946,
+      'accuracy': 0.8186019303890026,
+      'f1': 0.6227952803795159,
+      'f_b': 0.6152958707878671,
+      'error': 0.18139806961099736},
+     {'precision': 0.6040572792362768,
+      'recall': 0.6285075738763347,
+      'accuracy': 0.8154431120210588,
+      'f1': 0.6160399172447364,
+      'f_b': 0.6087939577620628,
+      'error': 0.1845568879789412},
+     {'precision': 0.609008145663632,
+      'recall': 0.6312391358331264,
+      'accuracy': 0.8176659842059082,
+      'f1': 0.6199243994634801,
+      'f_b': 0.613328186073445,
+      'error': 0.18233401579409184},
+     {'precision': 0.613884926295768,
+      'recall': 0.6411720884032779,
+      'accuracy': 0.8204738227551915,
+      'f1': 0.6272318717356978,
+      'f_b': 0.619154956596806,
+      'error': 0.17952617724480843},
+     {'precision': 0.6086124401913876,
+      'recall': 0.631735783461634,
+      'accuracy': 0.8175489909330214,
+      'f1': 0.6199585719507739,
+      'f_b': 0.613100689256278,
+      'error': 0.18245100906697864}]
 
 
 
@@ -1389,27 +1496,27 @@ graph_dt_metrics(max_feat_metrics, fsize=(13,5), title='Max_Features', x_label='
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_43_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_57_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_43_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_57_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_43_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_57_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_43_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_57_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_43_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_57_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_43_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_57_5.png)
 
 
 ### Decision Tree hyper parameter tunning: `max_depth`
@@ -1435,31 +1542,31 @@ for i in range(1, 100):
 
 
 ```python
-graph_dt_metrics(max_depth_metrics, fsize=(15,5), title='Max_Depth', x_label='max_depth')
+graph_dt_metrics(max_depth_metrics, fsize=(15,5), title='Decision Tree', x_label='max_depth')
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_46_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_60_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_46_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_60_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_46_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_60_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_46_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_60_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_46_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_60_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_46_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_60_5.png)
 
 
 ### Decision tree hyper parameter tunning: `max_features: 12` & `max_depth`
@@ -1485,31 +1592,31 @@ for i in range(1, 100):
 
 
 ```python
-graph_dt_metrics(feat_depth_metrics, title="Max_feat: 12", x_label='max_depth')
+graph_dt_metrics(feat_depth_metrics, title="Max_feat: 12", x_label='max_depth', fsize=(15,5))
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_49_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_63_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_49_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_63_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_49_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_63_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_49_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_63_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_49_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_63_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_49_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_63_5.png)
 
 
 
@@ -1520,28 +1627,307 @@ feat_depth_metrics[10]
 
 
 
-    {'precision': 0.7253052164261932,
-     'recall': 0.6491184504593991,
-     'accuracy': 0.859432582626499,
-     'f1': 0.6851002489844057,
-     'f_b': 0.7086699560808979,
-     'error': 0.14056741737350104}
+    {'precision': 0.7569771088115397,
+     'recall': 0.5994536876086417,
+     'accuracy': 0.86031003217315,
+     'f1': 0.6690687361419069,
+     'f_b': 0.719180122743252,
+     'error': 0.13968996782684995}
 
 
+
+### Decision Tree Tuning using max_features: 9 & max_depth
+
+
+```python
+feat_depth_metrics = []
+for i in range(1, 100):
+    clf = DecisionTreeClassifier(criterion='entropy', max_depth=i, max_features=9)
+    clf.fit(x_train, y_train)
+    y_preds = clf.predict(x_test)
+
+    feat_depth_metrics.append(calc_metrics(y_test, y_preds))
+```
+
+    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\metrics\classification.py:1143: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 due to no predicted samples.
+      'precision', 'predicted', average, warn_for)
+    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\metrics\classification.py:1143: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 due to no predicted samples.
+      'precision', 'predicted', average, warn_for)
+    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\metrics\classification.py:1143: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 due to no predicted samples.
+      'precision', 'predicted', average, warn_for)
+    
+
+
+```python
+graph_dt_metrics(feat_depth_metrics, title="Max_feat: 9", x_label='max_depth', fsize=(15,5))
+```
+
+
+![png](Classification_Notebook_files/Classification_Notebook_67_0.png)
+
+
+
+![png](Classification_Notebook_files/Classification_Notebook_67_1.png)
+
+
+
+![png](Classification_Notebook_files/Classification_Notebook_67_2.png)
+
+
+
+![png](Classification_Notebook_files/Classification_Notebook_67_3.png)
+
+
+
+![png](Classification_Notebook_files/Classification_Notebook_67_4.png)
+
+
+
+![png](Classification_Notebook_files/Classification_Notebook_67_5.png)
+
+
+## SVM Machines
+
+Here, we are using SVM machines to generate another model, to see if it can potentially outperform our Decision Tree and KNN.  
+This was added for fun and as a means to further practice modeling with `sklearn`.
+
+
+```python
+from sklearn.svm import SVC
+from sklearn.model_selection import GridSearchCV
+
+clf = SVC(gamma='auto')
+clf.fit(scaled_data_train, y_train)
+y_preds = clf.predict(scaled_data_test)
+```
+
+
+```python
+calc_metrics(labels=y_test, preds=y_preds)
+```
+
+
+
+
+    {'precision': 0.7658355795148248,
+     'recall': 0.5644400297988577,
+     'accuracy': 0.8567417373501024,
+     'f1': 0.6498927805575411,
+     'f_b': 0.7148248317504245,
+     'error': 0.14325826264989763}
+
+
+
+**NOTE:**
+The following line of code, may take somewhere between 1 - 3 hrs to run
+The best result from the code below were seen with the combinations below
+
+* [CV]  C=1000, gamma=0.01, kernel=rbf, score=0.8458849097609373, total= 2.3min
+* [CV]  C=100, gamma=0.01, kernel=rbf, score=0.8453978453978453, total=  30.3s
+
+
+```python
+from sklearn.model_selection import GridSearchCV
+
+# defining parameter range 
+param_grid = {'C': [0.1, 1, 10, 100, 1000],  
+              'gamma': [1, 0.1, 0.01, 0.001, 0.0001], 
+              'kernel': ['rbf']}  
+  
+grid = GridSearchCV(SVC(), param_grid, refit = True, verbose = 3) 
+  
+# fitting the model for grid search 
+grid.fit(scaled_data_train, y_train)
+
+# print best parameter after tuning 
+print(grid.best_params_) 
+  
+# print how our model looks after hyper-parameter tuning 
+print(grid.best_estimator_)
+```
+
+    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\model_selection\_split.py:2053: FutureWarning: You should specify a value for 'cv' instead of relying on the default value. The default value will change from 3 to 5 in version 0.22.
+      warnings.warn(CV_WARNING, FutureWarning)
+    [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
+    
+
+    Fitting 3 folds for each of 25 candidates, totalling 75 fits
+    [CV] C=0.1, gamma=1, kernel=rbf ......................................
+    [CV]  C=0.1, gamma=1, kernel=rbf, score=0.7827648114901257, total= 1.4min
+    [CV] C=0.1, gamma=1, kernel=rbf ......................................
+    
+
+    [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:  1.6min remaining:    0.0s
+    
+
+    [CV]  C=0.1, gamma=1, kernel=rbf, score=0.7838782838782838, total= 1.4min
+    [CV] C=0.1, gamma=1, kernel=rbf ......................................
+    
+
+    [Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:  3.3min remaining:    0.0s
+    
+
+    [CV]  C=0.1, gamma=1, kernel=rbf, score=0.7831222831222832, total= 1.4min
+    [CV] C=0.1, gamma=0.1, kernel=rbf ....................................
+    [CV]  C=0.1, gamma=0.1, kernel=rbf, score=0.8285930265520174, total=  20.0s
+    [CV] C=0.1, gamma=0.1, kernel=rbf ....................................
+    [CV]  C=0.1, gamma=0.1, kernel=rbf, score=0.8374598374598374, total=  19.8s
+    [CV] C=0.1, gamma=0.1, kernel=rbf ....................................
+    [CV]  C=0.1, gamma=0.1, kernel=rbf, score=0.8326403326403327, total=  22.0s
+    [CV] C=0.1, gamma=0.01, kernel=rbf ...................................
+    [CV]  C=0.1, gamma=0.01, kernel=rbf, score=0.8116791080034017, total=  21.4s
+    [CV] C=0.1, gamma=0.01, kernel=rbf ...................................
+    [CV]  C=0.1, gamma=0.01, kernel=rbf, score=0.8085428085428086, total=  23.9s
+    [CV] C=0.1, gamma=0.01, kernel=rbf ...................................
+    [CV]  C=0.1, gamma=0.01, kernel=rbf, score=0.8175203175203175, total=  24.6s
+    [CV] C=0.1, gamma=0.001, kernel=rbf ..................................
+    [CV]  C=0.1, gamma=0.001, kernel=rbf, score=0.7632051403193801, total=  23.3s
+    [CV] C=0.1, gamma=0.001, kernel=rbf ..................................
+    [CV]  C=0.1, gamma=0.001, kernel=rbf, score=0.7636552636552637, total=  23.4s
+    [CV] C=0.1, gamma=0.001, kernel=rbf ..................................
+    [CV]  C=0.1, gamma=0.001, kernel=rbf, score=0.7659232659232659, total=  22.8s
+    [CV] C=0.1, gamma=0.0001, kernel=rbf .................................
+    [CV]  C=0.1, gamma=0.0001, kernel=rbf, score=0.758669564395729, total=  25.4s
+    [CV] C=0.1, gamma=0.0001, kernel=rbf .................................
+    [CV]  C=0.1, gamma=0.0001, kernel=rbf, score=0.7587412587412588, total=  26.0s
+    [CV] C=0.1, gamma=0.0001, kernel=rbf .................................
+    [CV]  C=0.1, gamma=0.0001, kernel=rbf, score=0.7587412587412588, total=  23.9s
+    [CV] C=1, gamma=1, kernel=rbf ........................................
+    [CV]  C=1, gamma=1, kernel=rbf, score=0.813568931304923, total= 2.1min
+    [CV] C=1, gamma=1, kernel=rbf ........................................
+    [CV]  C=1, gamma=1, kernel=rbf, score=0.8206388206388207, total= 1.8min
+    [CV] C=1, gamma=1, kernel=rbf ........................................
+    [CV]  C=1, gamma=1, kernel=rbf, score=0.8165753165753166, total= 1.8min
+    [CV] C=1, gamma=0.1, kernel=rbf ......................................
+    [CV]  C=1, gamma=0.1, kernel=rbf, score=0.8443730511197203, total=  23.0s
+    [CV] C=1, gamma=0.1, kernel=rbf ......................................
+    [CV]  C=1, gamma=0.1, kernel=rbf, score=0.8449253449253449, total=  22.3s
+    [CV] C=1, gamma=0.1, kernel=rbf ......................................
+    [CV]  C=1, gamma=0.1, kernel=rbf, score=0.8448308448308448, total=  22.4s
+    [CV] C=1, gamma=0.01, kernel=rbf .....................................
+    [CV]  C=1, gamma=0.01, kernel=rbf, score=0.8368137579136351, total=  20.8s
+    [CV] C=1, gamma=0.01, kernel=rbf .....................................
+    [CV]  C=1, gamma=0.01, kernel=rbf, score=0.8391608391608392, total=  20.7s
+    [CV] C=1, gamma=0.01, kernel=rbf .....................................
+    [CV]  C=1, gamma=0.01, kernel=rbf, score=0.838971838971839, total=  20.2s
+    [CV] C=1, gamma=0.001, kernel=rbf ....................................
+    [CV]  C=1, gamma=0.001, kernel=rbf, score=0.8061041292639138, total=  23.0s
+    [CV] C=1, gamma=0.001, kernel=rbf ....................................
+    [CV]  C=1, gamma=0.001, kernel=rbf, score=0.8062748062748063, total=  25.1s
+    [CV] C=1, gamma=0.001, kernel=rbf ....................................
+    [CV]  C=1, gamma=0.001, kernel=rbf, score=0.8097713097713097, total=  21.8s
+    [CV] C=1, gamma=0.0001, kernel=rbf ...................................
+    [CV]  C=1, gamma=0.0001, kernel=rbf, score=0.7632996314844562, total=  24.5s
+    [CV] C=1, gamma=0.0001, kernel=rbf ...................................
+    [CV]  C=1, gamma=0.0001, kernel=rbf, score=0.7637497637497638, total=  27.0s
+    [CV] C=1, gamma=0.0001, kernel=rbf ...................................
+    [CV]  C=1, gamma=0.0001, kernel=rbf, score=0.7661122661122661, total=  27.0s
+    [CV] C=10, gamma=1, kernel=rbf .......................................
+    [CV]  C=10, gamma=1, kernel=rbf, score=0.8001511858641217, total= 2.1min
+    [CV] C=10, gamma=1, kernel=rbf .......................................
+    [CV]  C=10, gamma=1, kernel=rbf, score=0.8057078057078058, total= 2.1min
+    [CV] C=10, gamma=1, kernel=rbf .......................................
+    [CV]  C=10, gamma=1, kernel=rbf, score=0.8034398034398035, total= 2.2min
+    [CV] C=10, gamma=0.1, kernel=rbf .....................................
+    [CV]  C=10, gamma=0.1, kernel=rbf, score=0.8419162808277426, total=  34.0s
+    [CV] C=10, gamma=0.1, kernel=rbf .....................................
+    [CV]  C=10, gamma=0.1, kernel=rbf, score=0.8445473445473446, total=  32.4s
+    [CV] C=10, gamma=0.1, kernel=rbf .....................................
+    [CV]  C=10, gamma=0.1, kernel=rbf, score=0.8398223398223398, total=  32.5s
+    [CV] C=10, gamma=0.01, kernel=rbf ....................................
+    [CV]  C=10, gamma=0.01, kernel=rbf, score=0.8407823868468298, total=  21.3s
+    [CV] C=10, gamma=0.01, kernel=rbf ....................................
+    [CV]  C=10, gamma=0.01, kernel=rbf, score=0.8465318465318465, total=  21.2s
+    [CV] C=10, gamma=0.01, kernel=rbf ....................................
+    [CV]  C=10, gamma=0.01, kernel=rbf, score=0.8402948402948403, total=  19.8s
+    [CV] C=10, gamma=0.001, kernel=rbf ...................................
+    [CV]  C=10, gamma=0.001, kernel=rbf, score=0.8182934895587263, total=  19.7s
+    [CV] C=10, gamma=0.001, kernel=rbf ...................................
+    [CV]  C=10, gamma=0.001, kernel=rbf, score=0.8155358155358156, total=  21.2s
+    [CV] C=10, gamma=0.001, kernel=rbf ...................................
+    [CV]  C=10, gamma=0.001, kernel=rbf, score=0.8220563220563221, total=  21.1s
+    [CV] C=10, gamma=0.0001, kernel=rbf ..................................
+    [CV]  C=10, gamma=0.0001, kernel=rbf, score=0.8052537087782292, total=  22.3s
+    [CV] C=10, gamma=0.0001, kernel=rbf ..................................
+    [CV]  C=10, gamma=0.0001, kernel=rbf, score=0.806085806085806, total=  22.5s
+    [CV] C=10, gamma=0.0001, kernel=rbf ..................................
+    [CV]  C=10, gamma=0.0001, kernel=rbf, score=0.8091098091098091, total=  22.3s
+    [CV] C=100, gamma=1, kernel=rbf ......................................
+    [CV]  C=100, gamma=1, kernel=rbf, score=0.7852215817821033, total= 2.7min
+    [CV] C=100, gamma=1, kernel=rbf ......................................
+    [CV]  C=100, gamma=1, kernel=rbf, score=0.7960687960687961, total= 2.7min
+    [CV] C=100, gamma=1, kernel=rbf ......................................
+    [CV]  C=100, gamma=1, kernel=rbf, score=0.7955962955962956, total= 3.0min
+    [CV] C=100, gamma=0.1, kernel=rbf ....................................
+    [CV]  C=100, gamma=0.1, kernel=rbf, score=0.8293489558726259, total= 1.8min
+    [CV] C=100, gamma=0.1, kernel=rbf ....................................
+    [CV]  C=100, gamma=0.1, kernel=rbf, score=0.8337743337743337, total= 1.6min
+    [CV] C=100, gamma=0.1, kernel=rbf ....................................
+    [CV]  C=100, gamma=0.1, kernel=rbf, score=0.8298998298998299, total= 1.6min
+    [CV] C=100, gamma=0.01, kernel=rbf ...................................
+    [CV]  C=100, gamma=0.01, kernel=rbf, score=0.8440895776244921, total=  31.2s
+    [CV] C=100, gamma=0.01, kernel=rbf ...................................
+    [CV]  C=100, gamma=0.01, kernel=rbf, score=0.8446418446418447, total=  30.2s
+    [CV] C=100, gamma=0.01, kernel=rbf ...................................
+    [CV]  C=100, gamma=0.01, kernel=rbf, score=0.8453978453978453, total=  30.3s
+    [CV] C=100, gamma=0.001, kernel=rbf ..................................
+    [CV]  C=100, gamma=0.001, kernel=rbf, score=0.8379476518945479, total=  23.8s
+    [CV] C=100, gamma=0.001, kernel=rbf ..................................
+    [CV]  C=100, gamma=0.001, kernel=rbf, score=0.8382158382158382, total=  20.9s
+    [CV] C=100, gamma=0.001, kernel=rbf ..................................
+    [CV]  C=100, gamma=0.001, kernel=rbf, score=0.8383103383103383, total=  20.9s
+    [CV] C=100, gamma=0.0001, kernel=rbf .................................
+    [CV]  C=100, gamma=0.0001, kernel=rbf, score=0.810734196352641, total=  23.6s
+    [CV] C=100, gamma=0.0001, kernel=rbf .................................
+    [CV]  C=100, gamma=0.0001, kernel=rbf, score=0.8110943110943111, total=  23.7s
+    [CV] C=100, gamma=0.0001, kernel=rbf .................................
+    [CV]  C=100, gamma=0.0001, kernel=rbf, score=0.8133623133623133, total=  23.3s
+    [CV] C=1000, gamma=1, kernel=rbf .....................................
+    [CV]  C=1000, gamma=1, kernel=rbf, score=0.7829537938202779, total= 6.3min
+    [CV] C=1000, gamma=1, kernel=rbf .....................................
+    [CV]  C=1000, gamma=1, kernel=rbf, score=0.7886977886977887, total= 4.7min
+    [CV] C=1000, gamma=1, kernel=rbf .....................................
+    [CV]  C=1000, gamma=1, kernel=rbf, score=0.7883197883197883, total= 5.2min
+    [CV] C=1000, gamma=0.1, kernel=rbf ...................................
+    [CV]  C=1000, gamma=0.1, kernel=rbf, score=0.8141358782953794, total= 7.1min
+    [CV] C=1000, gamma=0.1, kernel=rbf ...................................
+    [CV]  C=1000, gamma=0.1, kernel=rbf, score=0.8178983178983179, total= 6.9min
+    [CV] C=1000, gamma=0.1, kernel=rbf ...................................
+    [CV]  C=1000, gamma=0.1, kernel=rbf, score=0.8109053109053109, total= 5.6min
+    [CV] C=1000, gamma=0.01, kernel=rbf ..................................
+    [CV]  C=1000, gamma=0.01, kernel=rbf, score=0.8458849097609373, total= 2.3min
+    [CV] C=1000, gamma=0.01, kernel=rbf ..................................
+    [CV]  C=1000, gamma=0.01, kernel=rbf, score=0.8455868455868456, total= 2.1min
+    [CV] C=1000, gamma=0.01, kernel=rbf ..................................
+    [CV]  C=1000, gamma=0.01, kernel=rbf, score=0.8434133434133434, total= 2.1min
+    [CV] C=1000, gamma=0.001, kernel=rbf .................................
+    [CV]  C=1000, gamma=0.001, kernel=rbf, score=0.8409713691769819, total=  35.2s
+    [CV] C=1000, gamma=0.001, kernel=rbf .................................
+    [CV]  C=1000, gamma=0.001, kernel=rbf, score=0.8454923454923455, total=  32.8s
+    [CV] C=1000, gamma=0.001, kernel=rbf .................................
+    [CV]  C=1000, gamma=0.001, kernel=rbf, score=0.8403893403893404, total=  32.7s
+    [CV] C=1000, gamma=0.0001, kernel=rbf ................................
+    [CV]  C=1000, gamma=0.0001, kernel=rbf, score=0.8183879807238024, total=  23.7s
+    [CV] C=1000, gamma=0.0001, kernel=rbf ................................
+    [CV]  C=1000, gamma=0.0001, kernel=rbf, score=0.8152523152523152, total=  24.6s
+    [CV] C=1000, gamma=0.0001, kernel=rbf ................................
+    [CV]  C=1000, gamma=0.0001, kernel=rbf, score=0.8212058212058212, total=  25.4s
+    
+
+    [Parallel(n_jobs=1)]: Done  75 out of  75 | elapsed: 105.7min finished
+    
 
 # Summary
 
-In this project, we sought to create a classification model using K-Nearest Neighbors and Decision Trees.  The packages used to model these
+In this project, we sought to create a classification model using K-Nearest Neighbors and Decision Trees.  The packages used to implement these models was `sklearn`.
 
 ### KNN
 
-The KNN model produced strong results.  The highest overall metrics were seen in .  Since this modeling technique utilizes voting, the decision was made to only utilize odd values when calculating the nearest neighbors.
-
-One thing that was noted was that the precision of our model increased as more values were used for k.  I am not sure as to what may have caused this.  This modeling technique performed well with regards to precision, lowest error rate, and accuracy, but did poorly the remaining measures
+The first model that was generated was KNN. This model is initally gave some what seemed to be strange results when passing in non-transformed data.  There were both upward and downward trends within the data that was caused by low correlation between the different target classes that were being predicted.  Once the data was transformed, the overall performance of the model increased and the results were more consistent than before.
 
 ### Decision Trees 
 
-The best overall results within our Decision Tree Modeling utilized the following hyper parameters: `max_depth: 11` & `max_features: 12`. It is important to note that this tree did not have the highest score in each respective measure.  As different combinations were added, some measure increased, while others decreased. I decided to pick the tree with the smallest overall margin of change in the measures used.  
+The best overall results within our Decision Tree Modeling utilized the following hyper parameters: `max_depth: 11` & `max_features: 12`. It is important to note that this tree did not have the highest score in each respective measure.  As different combinations were added, some measure increased, while others decreased. The decision was made to pick the tree with the smallest overall margin of change in the measures used.  
 
 We used an iterative process to find the best combination of these hyper parameters that would give us an optimum decision tree. Although there are many combinations of hyper parameters that could be used, we decided to only use max_depth and max_features, to simplify the project.
 
@@ -1555,21 +1941,26 @@ feat_depth_metrics[10]
 
 
 
-    {'precision': 0.7253052164261932,
-     'recall': 0.6491184504593991,
-     'accuracy': 0.859432582626499,
-     'f1': 0.6851002489844057,
-     'f_b': 0.7086699560808979,
-     'error': 0.14056741737350104}
+    {'precision': 0.782716049382716,
+     'recall': 0.5510305438291532,
+     'accuracy': 0.8582041532611875,
+     'f1': 0.6467502185951617,
+     'f_b': 0.7220016919372682,
+     'error': 0.14179584673881251}
 
 
 
 ### Conclusion
 
-The Decision Tree that resulted from our hyper parameter tunning that gave the overall best performance and the most consistent results.  Our KNN Model has some very interesting results and unexpected results.  More research would have to be done to determine the cause of the these results.  We were able to accurately predict 86% of our test data.
+The Decision Tree that resulted from our hyper parameter tunning that gave the overall best performance and the most consistent results.  Our KNN Model has some very interesting results and unexpected results that were influenced by the scaling of the data. We were able to accurately predict a little over 86% of the data accurately, using Decision Trees, withouth losing much with the other metrics used.
 
 ## Future Works
 
 Possible future addition, or editions, to this project include the following:
 * Pulling more recent data to see how demographics have increased over the years
 * Web scrapping with the census bureau website to automatically update the data used.
+
+
+```python
+
+```
