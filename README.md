@@ -1,15 +1,14 @@
-
 # Classification Modeling 
 
 # Abstract
 
-In this project, we will explore classification modeling using K-nearest neighbors (KNN) and Decision Trees.  We will also be using the dataset below to see how we can build and tune our models for optimal performance.  The data 
+In this project, we will explore classification modeling using K-nearest neighbors (KNN) and Decision Trees.  We will also be using the dataset below to see how we can build and tune our models for optimal performance.
 
 
 ### Dataset
 
 In this project, we will build a classification model using K-Nearest Neighbors(KNN) and Decision Trees, utilizing the following dataset:  https://www.openml.org/d/1590
-The information from the dataset was originally derived from the Census Bureay surveys in 1996.  
+The information from the dataset was originally derived from the Census Bureau surveys in 1996.  
 
 For more information on the features available within the dataset, refer to the link above.
 
@@ -21,7 +20,12 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import plotly.graph_objs as go
+from mpl_toolkits.mplot3d import Axes3D
+from sklearn.svm import SVC
+from sklearn.model_selection import GridSearchCV
 from sklearn import preprocessing
+from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import f1_score, precision_score, accuracy_score, fbeta_score, recall_score
@@ -1098,20 +1102,11 @@ scaled_data_train = scaler.fit_transform(x_train)
 scaled_data_test = scaler.transform(x_test)
 ```
 
-    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\preprocessing\data.py:625: DataConversionWarning: Data with input dtype int32, int64 were all converted to float64 by StandardScaler.
-      return self.partial_fit(X, y)
-    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\base.py:462: DataConversionWarning: Data with input dtype int32, int64 were all converted to float64 by StandardScaler.
-      return self.fit(X, **fit_params).transform(X)
-    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\ipykernel_launcher.py:10: DataConversionWarning: Data with input dtype int32, int64 were all converted to float64 by StandardScaler.
-      # Remove the CWD from sys.path while we load stuff.
-    
-
 #### Further investigation into the nature of the data
 
 
 ```python
 x_train.shape, x_test.shape
-sns.barplot()
 ```
 
 
@@ -1174,7 +1169,6 @@ In the following cells below, we will graph the data before and after applying t
 ### PCA Plot
 sns.set(rc={'figure.figsize':(13,8)})
 
-from sklearn.decomposition import PCA
 pca = PCA(n_components=2)
 
 pca_values = pca.fit_transform(x_train)
@@ -1195,7 +1189,6 @@ After transforming the data, it becomes more visible that there is a high level 
 
 ```python
 ### PCA Plot
-from sklearn.decomposition import PCA
 pca = PCA(n_components=2)
 
 pca_values = pca.fit_transform(scaled_data_train)
@@ -1207,6 +1200,74 @@ plt.show()
 
 
 ![png](Classification_Notebook_files/Classification_Notebook_39_0.png)
+
+
+In the graph below, we have another model of the data in a 3D space.
+
+
+```python
+### 3 Dimensional PCA Plot of Training Data
+pca = PCA(n_components=3)
+
+## Plotting the first 3 dimensions
+fig = plt.figure(1, figsize=(13, 8))
+ax = Axes3D(fig, elev=-150, azim=110)
+X_reduced = pca.fit_transform(scaled_data_train)
+ax.scatter(X_reduced[:, 0], X_reduced[:, 1], X_reduced[:, 2], c=y_train,
+           cmap=plt.cm.Set1, edgecolor='k', s=40)
+ax.set_title("First three PCA directions")
+ax.set_xlabel("1st eigenvector")
+ax.w_xaxis.set_ticklabels([])
+ax.set_ylabel("2nd eigenvector")
+ax.w_yaxis.set_ticklabels([])
+ax.set_zlabel("3rd eigenvector")
+ax.w_zaxis.set_ticklabels([])
+
+plt.show()
+```
+
+
+![png](Classification_Notebook_files/Classification_Notebook_41_0.png)
+
+
+3D Rendering of the training dataset with plotly
+
+
+```python
+# 3D Rendering of the training dataset with plotly
+
+fig = go.Figure(data=[go.Scatter3d(
+    x=X_reduced[:,0],
+    y=X_reduced[:,1],
+    z=X_reduced[:,2],
+    mode='markers',
+    marker=dict(
+        size=3,
+        color=y_train,                # set color to an array/list of desired values
+        colorscale='Cividis',   # choose a colorscale
+        opacity=0.8,
+    )
+)])
+
+# tight layout
+fig.update_layout(margin=dict(l=10, r=10, b=10, t=10))
+fig.show()
+```
+
+
+    ---------------------------------------------------------------------------
+
+    NameError                                 Traceback (most recent call last)
+
+    <ipython-input-1-65e84148eb71> in <module>()
+          1 # 3D Rendering of the training dataset with plotly
+          2 
+    ----> 3 fig = go.Figure(data=[go.Scatter3d(
+          4     x=X_reduced[:,0],
+          5     y=X_reduced[:,1],
+    
+
+    NameError: name 'go' is not defined
 
 
 Now that the data transformation is complete, the next step is to generate the learning models and see how the scaling affects the models.
@@ -1271,27 +1332,27 @@ graph_knn_metrics(list_of_neighbors, fsize=(20,5))
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_46_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_50_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_46_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_50_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_46_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_50_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_46_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_50_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_46_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_50_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_46_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_50_5.png)
 
 
 #### Model with feature scaling
@@ -1310,27 +1371,27 @@ graph_knn_metrics(list_of_neighbors, fsize=(20,5))
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_49_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_53_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_49_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_53_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_49_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_53_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_49_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_53_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_49_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_53_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_49_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_53_5.png)
 
 
 ## Decision Tree Modeling
@@ -1342,20 +1403,20 @@ In this section, we will setup a base decision tree and also attempt to increase
 
 ```python
 clf = DecisionTreeClassifier(criterion='entropy')
-clf.fit(x_train, y_train)
-y_preds = clf.predict(x_test)
+clf.fit(scaled_data_train, y_train)
+y_preds = clf.predict(scaled_data_test)
 calc_metrics(y_test, y_preds)
 ```
 
 
 
 
-    {'precision': 0.6092825005919962,
-     'recall': 0.6389371740749938,
-     'accuracy': 0.8184264404796724,
-     'f1': 0.6237575757575757,
-     'f_b': 0.614991156365027,
-     'error': 0.18157355952032758}
+    {'precision': 0.6094716801523085,
+     'recall': 0.6359572883039484,
+     'accuracy': 0.8182509505703423,
+     'f1': 0.622432859399684,
+     'f_b': 0.6145908327333814,
+     'error': 0.1817490494296578}
 
 
 
@@ -1392,8 +1453,8 @@ def graph_dt_metrics(list_of_metrics, fsize=(15,8), title='', x_label=''):
 max_feat_metrics = []
 for i in range(1, len(model_df.columns)+1 ):
     clf = DecisionTreeClassifier(criterion='entropy', max_features=i)
-    clf.fit(x_train, y_train)
-    y_preds = clf.predict(x_test)
+    clf.fit(scaled_data_train, y_train)
+    y_preds = clf.predict(scaled_data_test)
 
     max_feat_metrics.append(calc_metrics(y_test, y_preds))
 
@@ -1403,90 +1464,90 @@ max_feat_metrics
 
 
 
-    [{'precision': 0.6017848528702364,
-      'recall': 0.6195679165631984,
-      'accuracy': 0.8138052062006434,
-      'f1': 0.6105469227945676,
-      'f_b': 0.6052593275435447,
-      'error': 0.18619479379935655},
-     {'precision': 0.6103801169590644,
-      'recall': 0.6220511547057362,
-      'accuracy': 0.8174319976601345,
-      'f1': 0.6161603738777519,
-      'f_b': 0.612679156679548,
-      'error': 0.18256800233986545},
-     {'precision': 0.6125363020329139,
+    [{'precision': 0.5809500124347178,
+      'recall': 0.5800844300968463,
+      'accuracy': 0.8025153553670664,
+      'f1': 0.5805168986083499,
+      'f_b': 0.5807766893739745,
+      'error': 0.1974846446329336},
+     {'precision': 0.6194193705781899,
+      'recall': 0.630494164390365,
+      'accuracy': 0.8217022521205031,
+      'f1': 0.6249077036672409,
+      'f_b': 0.621603094550262,
+      'error': 0.17829774787949693},
+     {'precision': 0.610738255033557,
+      'recall': 0.6327290787186491,
+      'accuracy': 0.8184849371161158,
+      'f1': 0.6215392120990365,
+      'f_b': 0.6150132754042964,
+      'error': 0.18151506288388417},
+     {'precision': 0.611652794292509,
+      'recall': 0.63868885026074,
+      'accuracy': 0.8193623866627668,
+      'f1': 0.6248785228377065,
+      'f_b': 0.6168753297836619,
+      'error': 0.1806376133372331},
+     {'precision': 0.6165651644336175,
       'recall': 0.6285075738763347,
-      'accuracy': 0.8188359169347762,
-      'f1': 0.6204191690158108,
-      'f_b': 0.6156652882510338,
-      'error': 0.18116408306522375},
-     {'precision': 0.6158699344819218,
-      'recall': 0.6302458405761112,
-      'accuracy': 0.8202983328458614,
-      'f1': 0.6229749631811488,
-      'f_b': 0.6186924089512945,
-      'error': 0.17970166715413863},
-     {'precision': 0.6154594069032572,
-      'recall': 0.6287558976905885,
-      'accuracy': 0.8200058496636443,
-      'f1': 0.6220366048397001,
-      'f_b': 0.6180735243860762,
-      'error': 0.17999415033635566},
-     {'precision': 0.6131178707224335,
-      'recall': 0.6406754407747703,
-      'accuracy': 0.8201228429365311,
-      'f1': 0.6265938069216758,
-      'f_b': 0.6184380842801669,
-      'error': 0.17987715706346885},
-     {'precision': 0.6140224934194783,
-      'recall': 0.6371989073752173,
-      'accuracy': 0.8201813395729746,
-      'f1': 0.6253960516695101,
-      'f_b': 0.6185219110061226,
-      'error': 0.17981866042702543},
-     {'precision': 0.6166868198307134,
-      'recall': 0.6332257263471567,
-      'accuracy': 0.8208832992102955,
-      'f1': 0.6248468512619455,
-      'f_b': 0.619925122769485,
-      'error': 0.1791167007897046},
-     {'precision': 0.6101895734597157,
+      'accuracy': 0.8204153261187481,
+      'f1': 0.6224790949335957,
+      'f_b': 0.6189172005673204,
+      'error': 0.17958467388125182},
+     {'precision': 0.613003838771593,
+      'recall': 0.6344673454184256,
+      'accuracy': 0.8195378765720971,
+      'f1': 0.6235509456985966,
+      'f_b': 0.6171795738924585,
+      'error': 0.18046212342790288},
+     {'precision': 0.6092793217145549,
+      'recall': 0.6424137074745468,
+      'accuracy': 0.8187189236618895,
+      'f1': 0.6254079535839479,
+      'f_b': 0.6156299081433535,
+      'error': 0.18128107633811055},
+     {'precision': 0.6107542231739234,
+      'recall': 0.6374472311894711,
+      'accuracy': 0.8188944135712196,
+      'f1': 0.6238153098420414,
+      'f_b': 0.6159124718076683,
+      'error': 0.18110558642878036},
+     {'precision': 0.6157682260745666,
+      'recall': 0.6439036503600696,
+      'accuracy': 0.8214682655747294,
+      'f1': 0.6295217285748969,
+      'f_b': 0.621196876048105,
+      'error': 0.17853173442527054},
+     {'precision': 0.6068801897983392,
+      'recall': 0.635212316861187,
+      'accuracy': 0.8171395144779176,
+      'f1': 0.6207231254549866,
+      'f_b': 0.6123426054483649,
+      'error': 0.18286048552208248},
+     {'precision': 0.611784271798527,
       'recall': 0.6394338217035014,
-      'accuracy': 0.8188359169347762,
-      'f1': 0.6244695040620832,
-      'f_b': 0.6158224518103984,
-      'error': 0.18116408306522375},
-     {'precision': 0.6103958035288507,
-      'recall': 0.6357089644896946,
-      'accuracy': 0.8186019303890026,
-      'f1': 0.6227952803795159,
-      'f_b': 0.6152958707878671,
-      'error': 0.18139806961099736},
-     {'precision': 0.6040572792362768,
-      'recall': 0.6285075738763347,
-      'accuracy': 0.8154431120210588,
-      'f1': 0.6160399172447364,
-      'f_b': 0.6087939577620628,
-      'error': 0.1845568879789412},
-     {'precision': 0.609008145663632,
-      'recall': 0.6312391358331264,
-      'accuracy': 0.8176659842059082,
-      'f1': 0.6199243994634801,
-      'f_b': 0.613328186073445,
-      'error': 0.18233401579409184},
-     {'precision': 0.613884926295768,
-      'recall': 0.6411720884032779,
-      'accuracy': 0.8204738227551915,
-      'f1': 0.6272318717356978,
-      'f_b': 0.619154956596806,
-      'error': 0.17952617724480843},
-     {'precision': 0.6086124401913876,
-      'recall': 0.631735783461634,
-      'accuracy': 0.8175489909330214,
-      'f1': 0.6199585719507739,
-      'f_b': 0.613100689256278,
-      'error': 0.18245100906697864}]
+      'accuracy': 0.8194793799356537,
+      'f1': 0.6253035454103933,
+      'f_b': 0.6171212193835978,
+      'error': 0.1805206200643463},
+     {'precision': 0.6096743295019157,
+      'recall': 0.6322324310901416,
+      'accuracy': 0.8180169640245686,
+      'f1': 0.6207485066439108,
+      'f_b': 0.6140562442718633,
+      'error': 0.18198303597543142},
+     {'precision': 0.6133776091081594,
+      'recall': 0.6421653836602931,
+      'accuracy': 0.8203568294823048,
+      'f1': 0.6274414654858669,
+      'f_b': 0.6189268105882916,
+      'error': 0.17964317051769524},
+     {'precision': 0.6085308056872037,
+      'recall': 0.6376955550037249,
+      'accuracy': 0.8180169640245686,
+      'f1': 0.6227719170607493,
+      'f_b': 0.6141483713588749,
+      'error': 0.18198303597543142}]
 
 
 
@@ -1496,27 +1557,27 @@ graph_dt_metrics(max_feat_metrics, fsize=(13,5), title='Max_Features', x_label='
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_57_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_61_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_57_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_61_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_57_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_61_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_57_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_61_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_57_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_61_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_57_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_61_5.png)
 
 
 ### Decision Tree hyper parameter tunning: `max_depth`
@@ -1526,18 +1587,16 @@ graph_dt_metrics(max_feat_metrics, fsize=(13,5), title='Max_Features', x_label='
 max_depth_metrics = []
 for i in range(1, 100):
     clf = DecisionTreeClassifier(criterion='entropy', max_depth=i)
-    clf.fit(x_train, y_train)
-    y_preds = clf.predict(x_test)
+    clf.fit(scaled_data_train, y_train)
+    y_preds = clf.predict(scaled_data_test)
 
     max_depth_metrics.append(calc_metrics(y_test, y_preds))
 ```
 
-    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\metrics\classification.py:1143: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 due to no predicted samples.
-      'precision', 'predicted', average, warn_for)
-    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\metrics\classification.py:1143: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 due to no predicted samples.
-      'precision', 'predicted', average, warn_for)
-    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\metrics\classification.py:1143: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 due to no predicted samples.
-      'precision', 'predicted', average, warn_for)
+    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\metrics\_classification.py:1272: UndefinedMetricWarning:
+    
+    Precision is ill-defined and being set to 0.0 due to no predicted samples. Use `zero_division` parameter to control this behavior.
+    
     
 
 
@@ -1546,120 +1605,52 @@ graph_dt_metrics(max_depth_metrics, fsize=(15,5), title='Decision Tree', x_label
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_60_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_64_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_60_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_64_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_60_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_64_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_60_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_64_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_60_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_64_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_60_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_64_5.png)
 
 
 ### Decision tree hyper parameter tunning: `max_features: 12` & `max_depth`
+
 
 
 ```python
 feat_depth_metrics = []
 for i in range(1, 100):
     clf = DecisionTreeClassifier(criterion='entropy', max_depth=i, max_features=12)
-    clf.fit(x_train, y_train)
-    y_preds = clf.predict(x_test)
+    clf.fit(scaled_data_train, y_train)
+    y_preds = clf.predict(scaled_data_test)
 
     feat_depth_metrics.append(calc_metrics(y_test, y_preds))
 ```
 
-    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\metrics\classification.py:1143: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 due to no predicted samples.
-      'precision', 'predicted', average, warn_for)
-    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\metrics\classification.py:1143: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 due to no predicted samples.
-      'precision', 'predicted', average, warn_for)
-    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\metrics\classification.py:1143: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 due to no predicted samples.
-      'precision', 'predicted', average, warn_for)
+    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\metrics\_classification.py:1272: UndefinedMetricWarning:
+    
+    Precision is ill-defined and being set to 0.0 due to no predicted samples. Use `zero_division` parameter to control this behavior.
+    
     
 
 
 ```python
 graph_dt_metrics(feat_depth_metrics, title="Max_feat: 12", x_label='max_depth', fsize=(15,5))
-```
-
-
-![png](Classification_Notebook_files/Classification_Notebook_63_0.png)
-
-
-
-![png](Classification_Notebook_files/Classification_Notebook_63_1.png)
-
-
-
-![png](Classification_Notebook_files/Classification_Notebook_63_2.png)
-
-
-
-![png](Classification_Notebook_files/Classification_Notebook_63_3.png)
-
-
-
-![png](Classification_Notebook_files/Classification_Notebook_63_4.png)
-
-
-
-![png](Classification_Notebook_files/Classification_Notebook_63_5.png)
-
-
-
-```python
-feat_depth_metrics[10]
-```
-
-
-
-
-    {'precision': 0.7569771088115397,
-     'recall': 0.5994536876086417,
-     'accuracy': 0.86031003217315,
-     'f1': 0.6690687361419069,
-     'f_b': 0.719180122743252,
-     'error': 0.13968996782684995}
-
-
-
-### Decision Tree Tuning using max_features: 9 & max_depth
-
-
-```python
-feat_depth_metrics = []
-for i in range(1, 100):
-    clf = DecisionTreeClassifier(criterion='entropy', max_depth=i, max_features=9)
-    clf.fit(x_train, y_train)
-    y_preds = clf.predict(x_test)
-
-    feat_depth_metrics.append(calc_metrics(y_test, y_preds))
-```
-
-    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\metrics\classification.py:1143: UndefinedMetricWarning: Precision is ill-defined and being set to 0.0 due to no predicted samples.
-      'precision', 'predicted', average, warn_for)
-    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\metrics\classification.py:1143: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 due to no predicted samples.
-      'precision', 'predicted', average, warn_for)
-    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\metrics\classification.py:1143: UndefinedMetricWarning: F-score is ill-defined and being set to 0.0 due to no predicted samples.
-      'precision', 'predicted', average, warn_for)
-    
-
-
-```python
-graph_dt_metrics(feat_depth_metrics, title="Max_feat: 9", x_label='max_depth', fsize=(15,5))
 ```
 
 
@@ -1686,16 +1677,86 @@ graph_dt_metrics(feat_depth_metrics, title="Max_feat: 9", x_label='max_depth', f
 ![png](Classification_Notebook_files/Classification_Notebook_67_5.png)
 
 
+
+```python
+feat_depth_metrics[10]
+```
+
+
+
+
+    {'precision': 0.7486238532110092,
+     'recall': 0.6078966972932704,
+     'accuracy': 0.8595495758993857,
+     'f1': 0.6709606687679869,
+     'f_b': 0.7154965803472263,
+     'error': 0.1404504241006142}
+
+
+
+### Decision Tree Tuning using max_features: 9 & max_depth
+
+
+```python
+feat_depth_metrics = []
+for i in range(1, 100):
+    clf = DecisionTreeClassifier(criterion='entropy', max_depth=i, max_features=9)
+    clf.fit(scaled_data_train, y_train)
+    y_preds = clf.predict(scaled_data_test)
+
+    feat_depth_metrics.append(calc_metrics(y_test, y_preds))
+```
+
+    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\metrics\_classification.py:1272: UndefinedMetricWarning:
+    
+    Precision is ill-defined and being set to 0.0 due to no predicted samples. Use `zero_division` parameter to control this behavior.
+    
+    
+
+
+```python
+graph_dt_metrics(feat_depth_metrics, title="Max_feat: 9", x_label='max_depth', fsize=(15,5))
+```
+
+
+![png](Classification_Notebook_files/Classification_Notebook_71_0.png)
+
+
+
+![png](Classification_Notebook_files/Classification_Notebook_71_1.png)
+
+
+
+![png](Classification_Notebook_files/Classification_Notebook_71_2.png)
+
+
+
+![png](Classification_Notebook_files/Classification_Notebook_71_3.png)
+
+
+
+![png](Classification_Notebook_files/Classification_Notebook_71_4.png)
+
+
+
+![png](Classification_Notebook_files/Classification_Notebook_71_5.png)
+
+
 ## SVM Machines
 
 Here, we are using SVM machines to generate another model, to see if it can potentially outperform our Decision Tree and KNN.  
 This was added for fun and as a means to further practice modeling with `sklearn`.
 
+In the KNN model, the baseline was created using unscaled data.  Scaled data is used instead. 
+This is done because the difference in magnitude of our unscaled data creates issues within the SVM and causes certain metrics to zero out. The same error is seen when we utilize the unscaled data with our optimized SVM model.
+
+**_Anaconda3\envs\learn-env\lib\site-packages\sklearn\metrics\_classification.py:1272: UndefinedMetricWarning:_** <br/>
+**Precision is ill-defined and being set to 0.0 due to no predicted samples. Use `zero_division` parameter to control this behavior.**
+
+#### Baseline SVM Machine
+
 
 ```python
-from sklearn.svm import SVC
-from sklearn.model_selection import GridSearchCV
-
 clf = SVC(gamma='auto')
 clf.fit(scaled_data_train, y_train)
 y_preds = clf.predict(scaled_data_test)
@@ -1718,6 +1779,8 @@ calc_metrics(labels=y_test, preds=y_preds)
 
 
 
+### Running SVM using GridSearchCV to find the optimum conditions for our SVM
+
 **NOTE:**
 The following line of code, may take somewhere between 1 - 3 hrs to run
 The best result from the code below were seen with the combinations below
@@ -1727,224 +1790,244 @@ The best result from the code below were seen with the combinations below
 
 
 ```python
-from sklearn.model_selection import GridSearchCV
-
+## Running CSV with higher penalies
 # defining parameter range 
-param_grid = {'C': [0.1, 1, 10, 100, 1000],  
-              'gamma': [1, 0.1, 0.01, 0.001, 0.0001], 
+param_grid = {'C': [0.0001, 0.001, 0.01],  
+              'gamma': [1, 0.1, 0.01], 
               'kernel': ['rbf']}  
   
-grid = GridSearchCV(SVC(), param_grid, refit = True, verbose = 3) 
+grid = GridSearchCV(SVC(), param_grid, refit = True, verbose = 3, scoring='f1', n_jobs=-1)
   
 # fitting the model for grid search 
 grid.fit(scaled_data_train, y_train)
+```
 
+    Fitting 5 folds for each of 9 candidates, totalling 45 fits
+    
+
+    [Parallel(n_jobs=-1)]: Using backend LokyBackend with 4 concurrent workers.
+    [Parallel(n_jobs=-1)]: Done  24 tasks      | elapsed:  4.6min
+    [Parallel(n_jobs=-1)]: Done  45 out of  45 | elapsed:  9.7min finished
+    
+
+
+
+
+    GridSearchCV(cv=None, error_score=nan,
+                 estimator=SVC(C=1.0, break_ties=False, cache_size=200,
+                               class_weight=None, coef0=0.0,
+                               decision_function_shape='ovr', degree=3,
+                               gamma='scale', kernel='rbf', max_iter=-1,
+                               probability=False, random_state=None, shrinking=True,
+                               tol=0.001, verbose=False),
+                 iid='deprecated', n_jobs=-1,
+                 param_grid={'C': [0.0001, 0.001, 0.01], 'gamma': [1, 0.1, 0.01],
+                             'kernel': ['rbf']},
+                 pre_dispatch='2*n_jobs', refit=True, return_train_score=False,
+                 scoring='f1', verbose=3)
+
+
+
+
+```python
 # print best parameter after tuning 
-print(grid.best_params_) 
+print(grid.best_params_)
   
 # print how our model looks after hyper-parameter tuning 
 print(grid.best_estimator_)
 ```
 
-    C:\Users\Rahkeem\Anaconda3\envs\learn-env\lib\site-packages\sklearn\model_selection\_split.py:2053: FutureWarning: You should specify a value for 'cv' instead of relying on the default value. The default value will change from 3 to 5 in version 0.22.
-      warnings.warn(CV_WARNING, FutureWarning)
-    [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
+    {'C': 0.01, 'gamma': 0.1, 'kernel': 'rbf'}
+    SVC(C=0.01, break_ties=False, cache_size=200, class_weight=None, coef0=0.0,
+        decision_function_shape='ovr', degree=3, gamma=0.1, kernel='rbf',
+        max_iter=-1, probability=False, random_state=None, shrinking=True,
+        tol=0.001, verbose=False)
     
 
-    Fitting 3 folds for each of 25 candidates, totalling 75 fits
-    [CV] C=0.1, gamma=1, kernel=rbf ......................................
-    [CV]  C=0.1, gamma=1, kernel=rbf, score=0.7827648114901257, total= 1.4min
-    [CV] C=0.1, gamma=1, kernel=rbf ......................................
+
+```python
+# defining parameter range 
+param_grid = {'C': [0.1, 1, 10], 
+              'gamma': [1, 0.1, 0.01], 
+              'kernel': ['rbf']}  
+  
+grid = GridSearchCV(SVC(), param_grid, refit = True, verbose = 3, scoring='f1', n_jobs=-1)
+  
+# fitting the model for grid search 
+grid.fit(scaled_data_train, y_train)
+```
+
+    Fitting 5 folds for each of 9 candidates, totalling 45 fits
     
 
-    [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:  1.6min remaining:    0.0s
+    [Parallel(n_jobs=-1)]: Using backend LokyBackend with 4 concurrent workers.
+    [Parallel(n_jobs=-1)]: Done  24 tasks      | elapsed: 10.8min
+    [Parallel(n_jobs=-1)]: Done  45 out of  45 | elapsed: 19.3min finished
     
 
-    [CV]  C=0.1, gamma=1, kernel=rbf, score=0.7838782838782838, total= 1.4min
-    [CV] C=0.1, gamma=1, kernel=rbf ......................................
-    
 
-    [Parallel(n_jobs=1)]: Done   2 out of   2 | elapsed:  3.3min remaining:    0.0s
-    
 
-    [CV]  C=0.1, gamma=1, kernel=rbf, score=0.7831222831222832, total= 1.4min
-    [CV] C=0.1, gamma=0.1, kernel=rbf ....................................
-    [CV]  C=0.1, gamma=0.1, kernel=rbf, score=0.8285930265520174, total=  20.0s
-    [CV] C=0.1, gamma=0.1, kernel=rbf ....................................
-    [CV]  C=0.1, gamma=0.1, kernel=rbf, score=0.8374598374598374, total=  19.8s
-    [CV] C=0.1, gamma=0.1, kernel=rbf ....................................
-    [CV]  C=0.1, gamma=0.1, kernel=rbf, score=0.8326403326403327, total=  22.0s
-    [CV] C=0.1, gamma=0.01, kernel=rbf ...................................
-    [CV]  C=0.1, gamma=0.01, kernel=rbf, score=0.8116791080034017, total=  21.4s
-    [CV] C=0.1, gamma=0.01, kernel=rbf ...................................
-    [CV]  C=0.1, gamma=0.01, kernel=rbf, score=0.8085428085428086, total=  23.9s
-    [CV] C=0.1, gamma=0.01, kernel=rbf ...................................
-    [CV]  C=0.1, gamma=0.01, kernel=rbf, score=0.8175203175203175, total=  24.6s
-    [CV] C=0.1, gamma=0.001, kernel=rbf ..................................
-    [CV]  C=0.1, gamma=0.001, kernel=rbf, score=0.7632051403193801, total=  23.3s
-    [CV] C=0.1, gamma=0.001, kernel=rbf ..................................
-    [CV]  C=0.1, gamma=0.001, kernel=rbf, score=0.7636552636552637, total=  23.4s
-    [CV] C=0.1, gamma=0.001, kernel=rbf ..................................
-    [CV]  C=0.1, gamma=0.001, kernel=rbf, score=0.7659232659232659, total=  22.8s
-    [CV] C=0.1, gamma=0.0001, kernel=rbf .................................
-    [CV]  C=0.1, gamma=0.0001, kernel=rbf, score=0.758669564395729, total=  25.4s
-    [CV] C=0.1, gamma=0.0001, kernel=rbf .................................
-    [CV]  C=0.1, gamma=0.0001, kernel=rbf, score=0.7587412587412588, total=  26.0s
-    [CV] C=0.1, gamma=0.0001, kernel=rbf .................................
-    [CV]  C=0.1, gamma=0.0001, kernel=rbf, score=0.7587412587412588, total=  23.9s
-    [CV] C=1, gamma=1, kernel=rbf ........................................
-    [CV]  C=1, gamma=1, kernel=rbf, score=0.813568931304923, total= 2.1min
-    [CV] C=1, gamma=1, kernel=rbf ........................................
-    [CV]  C=1, gamma=1, kernel=rbf, score=0.8206388206388207, total= 1.8min
-    [CV] C=1, gamma=1, kernel=rbf ........................................
-    [CV]  C=1, gamma=1, kernel=rbf, score=0.8165753165753166, total= 1.8min
-    [CV] C=1, gamma=0.1, kernel=rbf ......................................
-    [CV]  C=1, gamma=0.1, kernel=rbf, score=0.8443730511197203, total=  23.0s
-    [CV] C=1, gamma=0.1, kernel=rbf ......................................
-    [CV]  C=1, gamma=0.1, kernel=rbf, score=0.8449253449253449, total=  22.3s
-    [CV] C=1, gamma=0.1, kernel=rbf ......................................
-    [CV]  C=1, gamma=0.1, kernel=rbf, score=0.8448308448308448, total=  22.4s
-    [CV] C=1, gamma=0.01, kernel=rbf .....................................
-    [CV]  C=1, gamma=0.01, kernel=rbf, score=0.8368137579136351, total=  20.8s
-    [CV] C=1, gamma=0.01, kernel=rbf .....................................
-    [CV]  C=1, gamma=0.01, kernel=rbf, score=0.8391608391608392, total=  20.7s
-    [CV] C=1, gamma=0.01, kernel=rbf .....................................
-    [CV]  C=1, gamma=0.01, kernel=rbf, score=0.838971838971839, total=  20.2s
-    [CV] C=1, gamma=0.001, kernel=rbf ....................................
-    [CV]  C=1, gamma=0.001, kernel=rbf, score=0.8061041292639138, total=  23.0s
-    [CV] C=1, gamma=0.001, kernel=rbf ....................................
-    [CV]  C=1, gamma=0.001, kernel=rbf, score=0.8062748062748063, total=  25.1s
-    [CV] C=1, gamma=0.001, kernel=rbf ....................................
-    [CV]  C=1, gamma=0.001, kernel=rbf, score=0.8097713097713097, total=  21.8s
-    [CV] C=1, gamma=0.0001, kernel=rbf ...................................
-    [CV]  C=1, gamma=0.0001, kernel=rbf, score=0.7632996314844562, total=  24.5s
-    [CV] C=1, gamma=0.0001, kernel=rbf ...................................
-    [CV]  C=1, gamma=0.0001, kernel=rbf, score=0.7637497637497638, total=  27.0s
-    [CV] C=1, gamma=0.0001, kernel=rbf ...................................
-    [CV]  C=1, gamma=0.0001, kernel=rbf, score=0.7661122661122661, total=  27.0s
-    [CV] C=10, gamma=1, kernel=rbf .......................................
-    [CV]  C=10, gamma=1, kernel=rbf, score=0.8001511858641217, total= 2.1min
-    [CV] C=10, gamma=1, kernel=rbf .......................................
-    [CV]  C=10, gamma=1, kernel=rbf, score=0.8057078057078058, total= 2.1min
-    [CV] C=10, gamma=1, kernel=rbf .......................................
-    [CV]  C=10, gamma=1, kernel=rbf, score=0.8034398034398035, total= 2.2min
-    [CV] C=10, gamma=0.1, kernel=rbf .....................................
-    [CV]  C=10, gamma=0.1, kernel=rbf, score=0.8419162808277426, total=  34.0s
-    [CV] C=10, gamma=0.1, kernel=rbf .....................................
-    [CV]  C=10, gamma=0.1, kernel=rbf, score=0.8445473445473446, total=  32.4s
-    [CV] C=10, gamma=0.1, kernel=rbf .....................................
-    [CV]  C=10, gamma=0.1, kernel=rbf, score=0.8398223398223398, total=  32.5s
-    [CV] C=10, gamma=0.01, kernel=rbf ....................................
-    [CV]  C=10, gamma=0.01, kernel=rbf, score=0.8407823868468298, total=  21.3s
-    [CV] C=10, gamma=0.01, kernel=rbf ....................................
-    [CV]  C=10, gamma=0.01, kernel=rbf, score=0.8465318465318465, total=  21.2s
-    [CV] C=10, gamma=0.01, kernel=rbf ....................................
-    [CV]  C=10, gamma=0.01, kernel=rbf, score=0.8402948402948403, total=  19.8s
-    [CV] C=10, gamma=0.001, kernel=rbf ...................................
-    [CV]  C=10, gamma=0.001, kernel=rbf, score=0.8182934895587263, total=  19.7s
-    [CV] C=10, gamma=0.001, kernel=rbf ...................................
-    [CV]  C=10, gamma=0.001, kernel=rbf, score=0.8155358155358156, total=  21.2s
-    [CV] C=10, gamma=0.001, kernel=rbf ...................................
-    [CV]  C=10, gamma=0.001, kernel=rbf, score=0.8220563220563221, total=  21.1s
-    [CV] C=10, gamma=0.0001, kernel=rbf ..................................
-    [CV]  C=10, gamma=0.0001, kernel=rbf, score=0.8052537087782292, total=  22.3s
-    [CV] C=10, gamma=0.0001, kernel=rbf ..................................
-    [CV]  C=10, gamma=0.0001, kernel=rbf, score=0.806085806085806, total=  22.5s
-    [CV] C=10, gamma=0.0001, kernel=rbf ..................................
-    [CV]  C=10, gamma=0.0001, kernel=rbf, score=0.8091098091098091, total=  22.3s
-    [CV] C=100, gamma=1, kernel=rbf ......................................
-    [CV]  C=100, gamma=1, kernel=rbf, score=0.7852215817821033, total= 2.7min
-    [CV] C=100, gamma=1, kernel=rbf ......................................
-    [CV]  C=100, gamma=1, kernel=rbf, score=0.7960687960687961, total= 2.7min
-    [CV] C=100, gamma=1, kernel=rbf ......................................
-    [CV]  C=100, gamma=1, kernel=rbf, score=0.7955962955962956, total= 3.0min
-    [CV] C=100, gamma=0.1, kernel=rbf ....................................
-    [CV]  C=100, gamma=0.1, kernel=rbf, score=0.8293489558726259, total= 1.8min
-    [CV] C=100, gamma=0.1, kernel=rbf ....................................
-    [CV]  C=100, gamma=0.1, kernel=rbf, score=0.8337743337743337, total= 1.6min
-    [CV] C=100, gamma=0.1, kernel=rbf ....................................
-    [CV]  C=100, gamma=0.1, kernel=rbf, score=0.8298998298998299, total= 1.6min
-    [CV] C=100, gamma=0.01, kernel=rbf ...................................
-    [CV]  C=100, gamma=0.01, kernel=rbf, score=0.8440895776244921, total=  31.2s
-    [CV] C=100, gamma=0.01, kernel=rbf ...................................
-    [CV]  C=100, gamma=0.01, kernel=rbf, score=0.8446418446418447, total=  30.2s
-    [CV] C=100, gamma=0.01, kernel=rbf ...................................
-    [CV]  C=100, gamma=0.01, kernel=rbf, score=0.8453978453978453, total=  30.3s
-    [CV] C=100, gamma=0.001, kernel=rbf ..................................
-    [CV]  C=100, gamma=0.001, kernel=rbf, score=0.8379476518945479, total=  23.8s
-    [CV] C=100, gamma=0.001, kernel=rbf ..................................
-    [CV]  C=100, gamma=0.001, kernel=rbf, score=0.8382158382158382, total=  20.9s
-    [CV] C=100, gamma=0.001, kernel=rbf ..................................
-    [CV]  C=100, gamma=0.001, kernel=rbf, score=0.8383103383103383, total=  20.9s
-    [CV] C=100, gamma=0.0001, kernel=rbf .................................
-    [CV]  C=100, gamma=0.0001, kernel=rbf, score=0.810734196352641, total=  23.6s
-    [CV] C=100, gamma=0.0001, kernel=rbf .................................
-    [CV]  C=100, gamma=0.0001, kernel=rbf, score=0.8110943110943111, total=  23.7s
-    [CV] C=100, gamma=0.0001, kernel=rbf .................................
-    [CV]  C=100, gamma=0.0001, kernel=rbf, score=0.8133623133623133, total=  23.3s
-    [CV] C=1000, gamma=1, kernel=rbf .....................................
-    [CV]  C=1000, gamma=1, kernel=rbf, score=0.7829537938202779, total= 6.3min
-    [CV] C=1000, gamma=1, kernel=rbf .....................................
-    [CV]  C=1000, gamma=1, kernel=rbf, score=0.7886977886977887, total= 4.7min
-    [CV] C=1000, gamma=1, kernel=rbf .....................................
-    [CV]  C=1000, gamma=1, kernel=rbf, score=0.7883197883197883, total= 5.2min
-    [CV] C=1000, gamma=0.1, kernel=rbf ...................................
-    [CV]  C=1000, gamma=0.1, kernel=rbf, score=0.8141358782953794, total= 7.1min
-    [CV] C=1000, gamma=0.1, kernel=rbf ...................................
-    [CV]  C=1000, gamma=0.1, kernel=rbf, score=0.8178983178983179, total= 6.9min
-    [CV] C=1000, gamma=0.1, kernel=rbf ...................................
-    [CV]  C=1000, gamma=0.1, kernel=rbf, score=0.8109053109053109, total= 5.6min
-    [CV] C=1000, gamma=0.01, kernel=rbf ..................................
-    [CV]  C=1000, gamma=0.01, kernel=rbf, score=0.8458849097609373, total= 2.3min
-    [CV] C=1000, gamma=0.01, kernel=rbf ..................................
-    [CV]  C=1000, gamma=0.01, kernel=rbf, score=0.8455868455868456, total= 2.1min
-    [CV] C=1000, gamma=0.01, kernel=rbf ..................................
-    [CV]  C=1000, gamma=0.01, kernel=rbf, score=0.8434133434133434, total= 2.1min
-    [CV] C=1000, gamma=0.001, kernel=rbf .................................
-    [CV]  C=1000, gamma=0.001, kernel=rbf, score=0.8409713691769819, total=  35.2s
-    [CV] C=1000, gamma=0.001, kernel=rbf .................................
-    [CV]  C=1000, gamma=0.001, kernel=rbf, score=0.8454923454923455, total=  32.8s
-    [CV] C=1000, gamma=0.001, kernel=rbf .................................
-    [CV]  C=1000, gamma=0.001, kernel=rbf, score=0.8403893403893404, total=  32.7s
-    [CV] C=1000, gamma=0.0001, kernel=rbf ................................
-    [CV]  C=1000, gamma=0.0001, kernel=rbf, score=0.8183879807238024, total=  23.7s
-    [CV] C=1000, gamma=0.0001, kernel=rbf ................................
-    [CV]  C=1000, gamma=0.0001, kernel=rbf, score=0.8152523152523152, total=  24.6s
-    [CV] C=1000, gamma=0.0001, kernel=rbf ................................
-    [CV]  C=1000, gamma=0.0001, kernel=rbf, score=0.8212058212058212, total=  25.4s
-    
 
-    [Parallel(n_jobs=1)]: Done  75 out of  75 | elapsed: 105.7min finished
-    
+    GridSearchCV(cv=None, error_score=nan,
+                 estimator=SVC(C=1.0, break_ties=False, cache_size=200,
+                               class_weight=None, coef0=0.0,
+                               decision_function_shape='ovr', degree=3,
+                               gamma='scale', kernel='rbf', max_iter=-1,
+                               probability=False, random_state=None, shrinking=True,
+                               tol=0.001, verbose=False),
+                 iid='deprecated', n_jobs=-1,
+                 param_grid={'C': [0.1, 1, 10], 'gamma': [1, 0.1, 0.01],
+                             'kernel': ['rbf']},
+                 pre_dispatch='2*n_jobs', refit=True, return_train_score=False,
+                 scoring='f1', verbose=3)
 
-    {'C': 1000, 'gamma': 0.01, 'kernel': 'rbf'}
-    SVC(C=1000, cache_size=200, class_weight=None, coef0=0.0,
-      decision_function_shape='ovr', degree=3, gamma=0.01, kernel='rbf',
-      max_iter=-1, probability=False, random_state=None, shrinking=True,
-      tol=0.001, verbose=False)
-    
+
 
 
 ```python
 # print best parameter after tuning 
-print(grid.best_params_) 
+print(grid.best_params_)
   
-```
-
-    {'C': 1000, 'gamma': 0.01, 'kernel': 'rbf'}
-    
-
-
-```python
 # print how our model looks after hyper-parameter tuning 
 print(grid.best_estimator_)
 ```
 
-    SVC(C=1000, cache_size=200, class_weight=None, coef0=0.0,
-      decision_function_shape='ovr', degree=3, gamma=0.01, kernel='rbf',
-      max_iter=-1, probability=False, random_state=None, shrinking=True,
-      tol=0.001, verbose=False)
+    {'C': 10, 'gamma': 0.1, 'kernel': 'rbf'}
+    SVC(C=10, break_ties=False, cache_size=200, class_weight=None, coef0=0.0,
+        decision_function_shape='ovr', degree=3, gamma=0.1, kernel='rbf',
+        max_iter=-1, probability=False, random_state=None, shrinking=True,
+        tol=0.001, verbose=False)
     
+
+
+```python
+# defining parameter range 
+param_grid = {'C': [100, 1000], 
+              'gamma': [1, 0.1, 0.01], 
+              'kernel': ['rbf']}  
+  
+grid = GridSearchCV(SVC(), param_grid, refit = True, verbose = 3, scoring='f1', n_jobs=-1)
+  
+# fitting the model for grid search 
+grid.fit(scaled_data_train, y_train)
+```
+
+    Fitting 5 folds for each of 6 candidates, totalling 30 fits
+    
+
+    [Parallel(n_jobs=-1)]: Using backend LokyBackend with 4 concurrent workers.
+    [Parallel(n_jobs=-1)]: Done  30 out of  30 | elapsed: 59.2min finished
+    
+
+
+
+
+    GridSearchCV(cv=None, error_score=nan,
+                 estimator=SVC(C=1.0, break_ties=False, cache_size=200,
+                               class_weight=None, coef0=0.0,
+                               decision_function_shape='ovr', degree=3,
+                               gamma='scale', kernel='rbf', max_iter=-1,
+                               probability=False, random_state=None, shrinking=True,
+                               tol=0.001, verbose=False),
+                 iid='deprecated', n_jobs=-1,
+                 param_grid={'C': [100, 1000], 'gamma': [1, 0.1, 0.01],
+                             'kernel': ['rbf']},
+                 pre_dispatch='2*n_jobs', refit=True, return_train_score=False,
+                 scoring='f1', verbose=3)
+
+
+
+
+```python
+# print best parameter after tuning 
+print(grid.best_params_)
+  
+# print how our model looks after hyper-parameter tuning 
+print(grid.best_estimator_)
+```
+
+    {'C': 100, 'gamma': 0.01, 'kernel': 'rbf'}
+    SVC(C=100, break_ties=False, cache_size=200, class_weight=None, coef0=0.0,
+        decision_function_shape='ovr', degree=3, gamma=0.01, kernel='rbf',
+        max_iter=-1, probability=False, random_state=None, shrinking=True,
+        tol=0.001, verbose=False)
+    
+
+#### SVM Using Scaled Data
+
+
+```python
+clf_1 = SVC(C=0.01, break_ties=False, cache_size=200, class_weight=None, coef0=0.0,
+    decision_function_shape='ovr', degree=3, gamma=0.1, kernel='rbf',
+    max_iter=-1, probability=False, random_state=None, shrinking=True,
+    tol=0.001, verbose=False)
+
+clf_1.fit(scaled_data_train, y_train)
+y_preds = clf_1.predict(scaled_data_test)
+
+calc_metrics(labels=y_test, preds=y_preds)
+```
+
+
+
+
+    {'precision': 0.794973544973545,
+     'recall': 0.2984852247330519,
+     'accuracy': 0.8166130447499269,
+     'f1': 0.43401335981224043,
+     'f_b': 0.5965260545905707,
+     'error': 0.18338695525007312}
+
+
+
+
+```python
+clf_2 = SVC(C=10, break_ties=False, cache_size=200, class_weight=None, coef0=0.0,
+    decision_function_shape='ovr', degree=3, gamma=0.1, kernel='rbf',
+    max_iter=-1, probability=False, random_state=None, shrinking=True,
+    tol=0.001, verbose=False)
+clf_2.fit(scaled_data_train, y_train)
+y_preds = clf_2.predict(scaled_data_test)
+
+calc_metrics(labels=y_test, preds=y_preds)
+```
+
+
+
+
+    {'precision': 0.7409638554216867,
+     'recall': 0.5803327539111001,
+     'accuracy': 0.8533489324363849,
+     'f1': 0.6508842779557165,
+     'f_b': 0.7020969777083459,
+     'error': 0.1466510675636151}
+
+
+
+
+```python
+clf_3 = SVC(C=100, break_ties=False, cache_size=200, class_weight=None, coef0=0.0,
+    decision_function_shape='ovr', degree=3, gamma=0.01, kernel='rbf',
+    max_iter=-1, probability=False, random_state=None, shrinking=True,
+    tol=0.001, verbose=False)
+
+clf_3.fit(scaled_data_train, y_train)
+y_preds = clf_3.predict(scaled_data_test)
+
+calc_metrics(labels=y_test, preds=y_preds)
+```
+
+
+
+
+    {'precision': 0.7546371623820372,
+     'recall': 0.5758629252545319,
+     'accuracy': 0.8559812810763381,
+     'f1': 0.6532394366197184,
+     'f_b': 0.7105214780317421,
+     'error': 0.1440187189236619}
+
+
 
 # Summary
 
@@ -1970,14 +2053,18 @@ feat_depth_metrics[10]
 
 
 
-    {'precision': 0.782716049382716,
-     'recall': 0.5510305438291532,
-     'accuracy': 0.8582041532611875,
-     'f1': 0.6467502185951617,
-     'f_b': 0.7220016919372682,
-     'error': 0.14179584673881251}
+    {'precision': 0.7862513426423201,
+     'recall': 0.5453190961013161,
+     'accuracy': 0.8579701667154138,
+     'f1': 0.6439882697947215,
+     'f_b': 0.7224159484176591,
+     'error': 0.14202983328458613}
 
 
+
+### Support Vector Machine
+
+In the support vector machine, several things had to be considered when 
 
 ### Conclusion
 
@@ -1988,8 +2075,3 @@ The Decision Tree that resulted from our hyper parameter tunning that gave the o
 Possible future addition, or editions, to this project include the following:
 * Pulling more recent data to see how demographics have increased over the years
 * Web scrapping with the census bureau website to automatically update the data used.
-
-
-```python
-
-```
