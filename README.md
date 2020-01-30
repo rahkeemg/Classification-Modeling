@@ -1167,12 +1167,14 @@ In the following cells below, we will graph the data before and after applying t
 
 ```python
 ### PCA Plot
-sns.set(rc={'figure.figsize':(13,8)})
+# sns.set(rc={'figure.figsize':(13,8)})
+sns.set(style='whitegrid')
 
 pca = PCA(n_components=2)
 
 pca_values = pca.fit_transform(x_train)
 
+plt.figure(figsize=(13,8))
 sns.scatterplot(x=pca_values[:,0], y=pca_values[:,1], hue=y_train, palette='bright')
 plt.title('Training Data Before Standardized Scaler')
 plt.show()
@@ -1193,6 +1195,7 @@ pca = PCA(n_components=2)
 
 pca_values = pca.fit_transform(scaled_data_train)
 
+plt.figure(figsize=(13,8))
 sns.scatterplot(x=pca_values[:,0], y=pca_values[:,1], hue=y_train, alpha=0.95, palette='bright')
 plt.title('Standardized Training Data')
 plt.show()
@@ -1234,41 +1237,25 @@ plt.show()
 
 
 ```python
-# 3D Rendering of the training dataset with plotly
+# # 3D Rendering of the training dataset with plotly
 
-fig = go.Figure(data=[go.Scatter3d(
-    x=X_reduced[:,0],
-    y=X_reduced[:,1],
-    z=X_reduced[:,2],
-    mode='markers',
-    marker=dict(
-        size=3,
-        color=y_train,                # set color to an array/list of desired values
-        colorscale='Cividis',   # choose a colorscale
-        opacity=0.8,
-    )
-)])
+# fig = go.Figure(data=[go.Scatter3d(
+#     x=X_reduced[:,0],
+#     y=X_reduced[:,1],
+#     z=X_reduced[:,2],
+#     mode='markers',
+#     marker=dict(
+#         size=3,
+#         color=y_train,                # set color to an array/list of desired values
+#         colorscale='Cividis',   # choose a colorscale
+#         opacity=0.8,
+#     )
+# )])
 
-# tight layout
-fig.update_layout(margin=dict(l=10, r=10, b=10, t=10))
-fig.show()
+# # tight layout
+# fig.update_layout(margin=dict(l=10, r=10, b=10, t=10))
+# fig.show()
 ```
-
-
-    ---------------------------------------------------------------------------
-
-    NameError                                 Traceback (most recent call last)
-
-    <ipython-input-1-65e84148eb71> in <module>()
-          1 # 3D Rendering of the training dataset with plotly
-          2 
-    ----> 3 fig = go.Figure(data=[go.Scatter3d(
-          4     x=X_reduced[:,0],
-          5     y=X_reduced[:,1],
-    
-
-    NameError: name 'go' is not defined
-
 
 Now that the data transformation is complete, the next step is to generate the learning models and see how the scaling affects the models.
 
@@ -1411,12 +1398,12 @@ calc_metrics(y_test, y_preds)
 
 
 
-    {'precision': 0.6094716801523085,
-     'recall': 0.6359572883039484,
-     'accuracy': 0.8182509505703423,
-     'f1': 0.622432859399684,
-     'f_b': 0.6145908327333814,
-     'error': 0.1817490494296578}
+    {'precision': 0.605764649833254,
+     'recall': 0.6314874596473802,
+     'accuracy': 0.8163790582041532,
+     'f1': 0.6183586626139818,
+     'f_b': 0.6107401892502041,
+     'error': 0.18362094179584673}
 
 
 
@@ -1464,90 +1451,90 @@ max_feat_metrics
 
 
 
-    [{'precision': 0.5809500124347178,
-      'recall': 0.5800844300968463,
-      'accuracy': 0.8025153553670664,
-      'f1': 0.5805168986083499,
-      'f_b': 0.5807766893739745,
-      'error': 0.1974846446329336},
-     {'precision': 0.6194193705781899,
-      'recall': 0.630494164390365,
-      'accuracy': 0.8217022521205031,
-      'f1': 0.6249077036672409,
-      'f_b': 0.621603094550262,
-      'error': 0.17829774787949693},
-     {'precision': 0.610738255033557,
-      'recall': 0.6327290787186491,
-      'accuracy': 0.8184849371161158,
-      'f1': 0.6215392120990365,
-      'f_b': 0.6150132754042964,
-      'error': 0.18151506288388417},
-     {'precision': 0.611652794292509,
-      'recall': 0.63868885026074,
-      'accuracy': 0.8193623866627668,
-      'f1': 0.6248785228377065,
-      'f_b': 0.6168753297836619,
-      'error': 0.1806376133372331},
-     {'precision': 0.6165651644336175,
+    [{'precision': 0.5952323035757723,
+      'recall': 0.6076483734790167,
+      'accuracy': 0.8102369113775958,
+      'f1': 0.6013762595232244,
+      'f_b': 0.5976747594157589,
+      'error': 0.1897630886224042},
+     {'precision': 0.6059658407505413,
+      'recall': 0.6255276881052892,
+      'accuracy': 0.8159695817490494,
+      'f1': 0.6155913978494624,
+      'f_b': 0.6097797143548779,
+      'error': 0.18403041825095057},
+     {'precision': 0.5991824957922578,
+      'recall': 0.618822945120437,
+      'accuracy': 0.8126937701082187,
+      'f1': 0.6088443684339115,
+      'f_b': 0.6030102114891353,
+      'error': 0.18730622989178122},
+     {'precision': 0.6100265124126295,
       'recall': 0.6285075738763347,
-      'accuracy': 0.8204153261187481,
-      'f1': 0.6224790949335957,
-      'f_b': 0.6189172005673204,
-      'error': 0.17958467388125182},
-     {'precision': 0.613003838771593,
-      'recall': 0.6344673454184256,
-      'accuracy': 0.8195378765720971,
-      'f1': 0.6235509456985966,
-      'f_b': 0.6171795738924585,
-      'error': 0.18046212342790288},
-     {'precision': 0.6092793217145549,
-      'recall': 0.6424137074745468,
+      'accuracy': 0.8178414741152383,
+      'f1': 0.6191291585127201,
+      'f_b': 0.6136352616011249,
+      'error': 0.1821585258847616},
+     {'precision': 0.6191396810053166,
+      'recall': 0.6362056121182021,
+      'accuracy': 0.8221117285756069,
+      'f1': 0.6275566442131048,
+      'f_b': 0.6224792263958404,
+      'error': 0.1778882714243931},
+     {'precision': 0.6128488931665063,
+      'recall': 0.6324807549043954,
+      'accuracy': 0.8193038900263235,
+      'f1': 0.6225100818770621,
+      'f_b': 0.6166771584911142,
+      'error': 0.18069610997367652},
+     {'precision': 0.611969111969112,
+      'recall': 0.6297491929476037,
       'accuracy': 0.8187189236618895,
-      'f1': 0.6254079535839479,
-      'f_b': 0.6156299081433535,
+      'f1': 0.6207318565659039,
+      'f_b': 0.6154443527641605,
       'error': 0.18128107633811055},
-     {'precision': 0.6107542231739234,
-      'recall': 0.6374472311894711,
-      'accuracy': 0.8188944135712196,
-      'f1': 0.6238153098420414,
-      'f_b': 0.6159124718076683,
-      'error': 0.18110558642878036},
-     {'precision': 0.6157682260745666,
-      'recall': 0.6439036503600696,
-      'accuracy': 0.8214682655747294,
-      'f1': 0.6295217285748969,
-      'f_b': 0.621196876048105,
-      'error': 0.17853173442527054},
-     {'precision': 0.6068801897983392,
-      'recall': 0.635212316861187,
-      'accuracy': 0.8171395144779176,
-      'f1': 0.6207231254549866,
-      'f_b': 0.6123426054483649,
-      'error': 0.18286048552208248},
-     {'precision': 0.611784271798527,
-      'recall': 0.6394338217035014,
-      'accuracy': 0.8194793799356537,
-      'f1': 0.6253035454103933,
-      'f_b': 0.6171212193835978,
-      'error': 0.1805206200643463},
-     {'precision': 0.6096743295019157,
-      'recall': 0.6322324310901416,
-      'accuracy': 0.8180169640245686,
-      'f1': 0.6207485066439108,
-      'f_b': 0.6140562442718633,
-      'error': 0.18198303597543142},
-     {'precision': 0.6133776091081594,
-      'recall': 0.6421653836602931,
-      'accuracy': 0.8203568294823048,
-      'f1': 0.6274414654858669,
-      'f_b': 0.6189268105882916,
-      'error': 0.17964317051769524},
-     {'precision': 0.6085308056872037,
-      'recall': 0.6376955550037249,
-      'accuracy': 0.8180169640245686,
-      'f1': 0.6227719170607493,
-      'f_b': 0.6141483713588749,
-      'error': 0.18198303597543142}]
+     {'precision': 0.6162005785920925,
+      'recall': 0.6347156692326794,
+      'accuracy': 0.820824802573852,
+      'f1': 0.6253211009174312,
+      'f_b': 0.6198166739415102,
+      'error': 0.179175197426148},
+     {'precision': 0.6125995655322231,
+      'recall': 0.6302458405761112,
+      'accuracy': 0.8190114068441064,
+      'f1': 0.621297429620563,
+      'f_b': 0.6160493227826593,
+      'error': 0.18098859315589352},
+     {'precision': 0.6050260787102892,
+      'recall': 0.6337223739756642,
+      'accuracy': 0.8162620649312664,
+      'f1': 0.6190418435415403,
+      'f_b': 0.6105555289726782,
+      'error': 0.18373793506873354},
+     {'precision': 0.6195652173913043,
+      'recall': 0.6511050409734294,
+      'accuracy': 0.8236326411231354,
+      'f1': 0.6349436977842354,
+      'f_b': 0.6256263421617752,
+      'error': 0.17636735887686458},
+     {'precision': 0.604756242568371,
+      'recall': 0.6314874596473802,
+      'accuracy': 0.8159695817490494,
+      'f1': 0.617832847424684,
+      'f_b': 0.6099198925504868,
+      'error': 0.18403041825095057},
+     {'precision': 0.6108608015176666,
+      'recall': 0.6396821455177552,
+      'accuracy': 0.8191284001169933,
+      'f1': 0.6249393498301795,
+      'f_b': 0.6164154103852597,
+      'error': 0.18087159988300672},
+     {'precision': 0.6062692947043458,
+      'recall': 0.6339706977899181,
+      'accuracy': 0.816788534659257,
+      'f1': 0.619810633648944,
+      'f_b': 0.6116142015236451,
+      'error': 0.1832114653407429}]
 
 
 
@@ -1685,12 +1672,12 @@ feat_depth_metrics[10]
 
 
 
-    {'precision': 0.7486238532110092,
-     'recall': 0.6078966972932704,
-     'accuracy': 0.8595495758993857,
-     'f1': 0.6709606687679869,
-     'f_b': 0.7154965803472263,
-     'error': 0.1404504241006142}
+    {'precision': 0.7644588045234249,
+     'recall': 0.5875341445244598,
+     'accuracy': 0.8601930389002632,
+     'f1': 0.6644201067115978,
+     'f_b': 0.721033705125861,
+     'error': 0.13980696109973675}
 
 
 
@@ -1747,11 +1734,16 @@ graph_dt_metrics(feat_depth_metrics, title="Max_feat: 9", x_label='max_depth', f
 Here, we are using SVM machines to generate another model, to see if it can potentially outperform our Decision Tree and KNN.  
 This was added for fun and as a means to further practice modeling with `sklearn`.
 
-In the KNN model, the baseline was created using unscaled data.  Scaled data is used instead. 
+In the KNN model, the baseline was created using unscaled data.  Scaled data is used for the SVM Models. 
 This is done because the difference in magnitude of our unscaled data creates issues within the SVM and causes certain metrics to zero out. The same error is seen when we utilize the unscaled data with our optimized SVM model.
 
 **_Anaconda3\envs\learn-env\lib\site-packages\sklearn\metrics\_classification.py:1272: UndefinedMetricWarning:_** <br/>
 **Precision is ill-defined and being set to 0.0 due to no predicted samples. Use `zero_division` parameter to control this behavior.**
+
+
+```python
+list_of_svm = []
+```
 
 #### Baseline SVM Machine
 
@@ -1764,20 +1756,10 @@ y_preds = clf.predict(scaled_data_test)
 
 
 ```python
-calc_metrics(labels=y_test, preds=y_preds)
+svm_metrics = calc_metrics(labels=y_test, preds=y_preds)
+svm_metrics['title'] = 'Baseline SVM'
+list_of_svm.append(svm_metrics)
 ```
-
-
-
-
-    {'precision': 0.7658355795148248,
-     'recall': 0.5644400297988577,
-     'accuracy': 0.8567417373501024,
-     'f1': 0.6498927805575411,
-     'f_b': 0.7148248317504245,
-     'error': 0.14325826264989763}
-
-
 
 ### Running SVM using GridSearchCV to find the optimum conditions for our SVM
 
@@ -1802,32 +1784,6 @@ grid = GridSearchCV(SVC(), param_grid, refit = True, verbose = 3, scoring='f1', 
 grid.fit(scaled_data_train, y_train)
 ```
 
-    Fitting 5 folds for each of 9 candidates, totalling 45 fits
-    
-
-    [Parallel(n_jobs=-1)]: Using backend LokyBackend with 4 concurrent workers.
-    [Parallel(n_jobs=-1)]: Done  24 tasks      | elapsed:  4.6min
-    [Parallel(n_jobs=-1)]: Done  45 out of  45 | elapsed:  9.7min finished
-    
-
-
-
-
-    GridSearchCV(cv=None, error_score=nan,
-                 estimator=SVC(C=1.0, break_ties=False, cache_size=200,
-                               class_weight=None, coef0=0.0,
-                               decision_function_shape='ovr', degree=3,
-                               gamma='scale', kernel='rbf', max_iter=-1,
-                               probability=False, random_state=None, shrinking=True,
-                               tol=0.001, verbose=False),
-                 iid='deprecated', n_jobs=-1,
-                 param_grid={'C': [0.0001, 0.001, 0.01], 'gamma': [1, 0.1, 0.01],
-                             'kernel': ['rbf']},
-                 pre_dispatch='2*n_jobs', refit=True, return_train_score=False,
-                 scoring='f1', verbose=3)
-
-
-
 
 ```python
 # print best parameter after tuning 
@@ -1836,13 +1792,6 @@ print(grid.best_params_)
 # print how our model looks after hyper-parameter tuning 
 print(grid.best_estimator_)
 ```
-
-    {'C': 0.01, 'gamma': 0.1, 'kernel': 'rbf'}
-    SVC(C=0.01, break_ties=False, cache_size=200, class_weight=None, coef0=0.0,
-        decision_function_shape='ovr', degree=3, gamma=0.1, kernel='rbf',
-        max_iter=-1, probability=False, random_state=None, shrinking=True,
-        tol=0.001, verbose=False)
-    
 
 
 ```python
@@ -1857,32 +1806,6 @@ grid = GridSearchCV(SVC(), param_grid, refit = True, verbose = 3, scoring='f1', 
 grid.fit(scaled_data_train, y_train)
 ```
 
-    Fitting 5 folds for each of 9 candidates, totalling 45 fits
-    
-
-    [Parallel(n_jobs=-1)]: Using backend LokyBackend with 4 concurrent workers.
-    [Parallel(n_jobs=-1)]: Done  24 tasks      | elapsed: 10.8min
-    [Parallel(n_jobs=-1)]: Done  45 out of  45 | elapsed: 19.3min finished
-    
-
-
-
-
-    GridSearchCV(cv=None, error_score=nan,
-                 estimator=SVC(C=1.0, break_ties=False, cache_size=200,
-                               class_weight=None, coef0=0.0,
-                               decision_function_shape='ovr', degree=3,
-                               gamma='scale', kernel='rbf', max_iter=-1,
-                               probability=False, random_state=None, shrinking=True,
-                               tol=0.001, verbose=False),
-                 iid='deprecated', n_jobs=-1,
-                 param_grid={'C': [0.1, 1, 10], 'gamma': [1, 0.1, 0.01],
-                             'kernel': ['rbf']},
-                 pre_dispatch='2*n_jobs', refit=True, return_train_score=False,
-                 scoring='f1', verbose=3)
-
-
-
 
 ```python
 # print best parameter after tuning 
@@ -1891,13 +1814,6 @@ print(grid.best_params_)
 # print how our model looks after hyper-parameter tuning 
 print(grid.best_estimator_)
 ```
-
-    {'C': 10, 'gamma': 0.1, 'kernel': 'rbf'}
-    SVC(C=10, break_ties=False, cache_size=200, class_weight=None, coef0=0.0,
-        decision_function_shape='ovr', degree=3, gamma=0.1, kernel='rbf',
-        max_iter=-1, probability=False, random_state=None, shrinking=True,
-        tol=0.001, verbose=False)
-    
 
 
 ```python
@@ -1912,31 +1828,6 @@ grid = GridSearchCV(SVC(), param_grid, refit = True, verbose = 3, scoring='f1', 
 grid.fit(scaled_data_train, y_train)
 ```
 
-    Fitting 5 folds for each of 6 candidates, totalling 30 fits
-    
-
-    [Parallel(n_jobs=-1)]: Using backend LokyBackend with 4 concurrent workers.
-    [Parallel(n_jobs=-1)]: Done  30 out of  30 | elapsed: 59.2min finished
-    
-
-
-
-
-    GridSearchCV(cv=None, error_score=nan,
-                 estimator=SVC(C=1.0, break_ties=False, cache_size=200,
-                               class_weight=None, coef0=0.0,
-                               decision_function_shape='ovr', degree=3,
-                               gamma='scale', kernel='rbf', max_iter=-1,
-                               probability=False, random_state=None, shrinking=True,
-                               tol=0.001, verbose=False),
-                 iid='deprecated', n_jobs=-1,
-                 param_grid={'C': [100, 1000], 'gamma': [1, 0.1, 0.01],
-                             'kernel': ['rbf']},
-                 pre_dispatch='2*n_jobs', refit=True, return_train_score=False,
-                 scoring='f1', verbose=3)
-
-
-
 
 ```python
 # print best parameter after tuning 
@@ -1946,14 +1837,7 @@ print(grid.best_params_)
 print(grid.best_estimator_)
 ```
 
-    {'C': 100, 'gamma': 0.01, 'kernel': 'rbf'}
-    SVC(C=100, break_ties=False, cache_size=200, class_weight=None, coef0=0.0,
-        decision_function_shape='ovr', degree=3, gamma=0.01, kernel='rbf',
-        max_iter=-1, probability=False, random_state=None, shrinking=True,
-        tol=0.001, verbose=False)
-    
-
-#### SVM Using Scaled Data
+#### Comparing SVM Models from the different pools created
 
 
 ```python
@@ -1965,7 +1849,11 @@ clf_1 = SVC(C=0.01, break_ties=False, cache_size=200, class_weight=None, coef0=0
 clf_1.fit(scaled_data_train, y_train)
 y_preds = clf_1.predict(scaled_data_test)
 
-calc_metrics(labels=y_test, preds=y_preds)
+svm_metrics = calc_metrics(labels=y_test, preds=y_preds)
+svm_metrics['title'] = 'Pool_1'
+list_of_svm.append(svm_metrics)
+
+svm_metrics
 ```
 
 
@@ -1976,7 +1864,8 @@ calc_metrics(labels=y_test, preds=y_preds)
      'accuracy': 0.8166130447499269,
      'f1': 0.43401335981224043,
      'f_b': 0.5965260545905707,
-     'error': 0.18338695525007312}
+     'error': 0.18338695525007312,
+     'title': 'Pool_1'}
 
 
 
@@ -1989,7 +1878,11 @@ clf_2 = SVC(C=10, break_ties=False, cache_size=200, class_weight=None, coef0=0.0
 clf_2.fit(scaled_data_train, y_train)
 y_preds = clf_2.predict(scaled_data_test)
 
-calc_metrics(labels=y_test, preds=y_preds)
+svm_metrics = calc_metrics(labels=y_test, preds=y_preds)
+svm_metrics['title'] = 'Pool_2'
+list_of_svm.append(svm_metrics)
+
+svm_metrics
 ```
 
 
@@ -2000,7 +1893,8 @@ calc_metrics(labels=y_test, preds=y_preds)
      'accuracy': 0.8533489324363849,
      'f1': 0.6508842779557165,
      'f_b': 0.7020969777083459,
-     'error': 0.1466510675636151}
+     'error': 0.1466510675636151,
+     'title': 'Pool_2'}
 
 
 
@@ -2014,7 +1908,11 @@ clf_3 = SVC(C=100, break_ties=False, cache_size=200, class_weight=None, coef0=0.
 clf_3.fit(scaled_data_train, y_train)
 y_preds = clf_3.predict(scaled_data_test)
 
-calc_metrics(labels=y_test, preds=y_preds)
+svm_metrics = calc_metrics(labels=y_test, preds=y_preds)
+svm_metrics['title'] = 'Pool_3'
+list_of_svm.append(svm_metrics)
+
+svm_metrics
 ```
 
 
@@ -2025,9 +1923,167 @@ calc_metrics(labels=y_test, preds=y_preds)
      'accuracy': 0.8559812810763381,
      'f1': 0.6532394366197184,
      'f_b': 0.7105214780317421,
-     'error': 0.1440187189236619}
+     'error': 0.1440187189236619,
+     'title': 'Pool_3'}
 
 
+
+### Graphing SVM Metrics
+
+
+
+```python
+svm_df = pd.DataFrame([svm for svm in list_of_svm])
+svm_df.set_index(keys='title', inplace=True)
+svm_df
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>accuracy</th>
+      <th>error</th>
+      <th>f1</th>
+      <th>f_b</th>
+      <th>precision</th>
+      <th>recall</th>
+    </tr>
+    <tr>
+      <th>title</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Baseline SVM</th>
+      <td>0.856742</td>
+      <td>0.143258</td>
+      <td>0.649893</td>
+      <td>0.714825</td>
+      <td>0.765836</td>
+      <td>0.564440</td>
+    </tr>
+    <tr>
+      <th>Pool_1</th>
+      <td>0.816613</td>
+      <td>0.183387</td>
+      <td>0.434013</td>
+      <td>0.596526</td>
+      <td>0.794974</td>
+      <td>0.298485</td>
+    </tr>
+    <tr>
+      <th>Pool_2</th>
+      <td>0.853349</td>
+      <td>0.146651</td>
+      <td>0.650884</td>
+      <td>0.702097</td>
+      <td>0.740964</td>
+      <td>0.580333</td>
+    </tr>
+    <tr>
+      <th>Pool_3</th>
+      <td>0.855981</td>
+      <td>0.144019</td>
+      <td>0.653239</td>
+      <td>0.710521</td>
+      <td>0.754637</td>
+      <td>0.575863</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+x = list(svm_df.columns)
+names = list(svm_df.index)
+
+fig = go.Figure()
+
+for name in names:
+    fig.add_trace(go.Bar(x=x, 
+                         y=svm_df[svm_df.index==name].values.reshape(-1), 
+                         name=name)
+                 )
+fig.update_layout(title_text='SVM Metric Comparisons')
+fig.show()
+```
+
+
+<div>
+
+
+            <div id="ff10163d-125d-414d-a917-2f6e13c81ff4" class="plotly-graph-div" style="height:525px; width:100%;"></div>
+            <script type="text/javascript">
+                require(["plotly"], function(Plotly) {
+                    window.PLOTLYENV=window.PLOTLYENV || {};
+
+                if (document.getElementById("ff10163d-125d-414d-a917-2f6e13c81ff4")) {
+                    Plotly.newPlot(
+                        'ff10163d-125d-414d-a917-2f6e13c81ff4',
+                        [{"name": "Baseline SVM", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8567417373501024, 0.14325826264989763, 0.6498927805575411, 0.7148248317504245, 0.7658355795148248, 0.5644400297988577]}, {"name": "Pool_1", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8166130447499269, 0.18338695525007312, 0.43401335981224043, 0.5965260545905707, 0.794973544973545, 0.2984852247330519]}, {"name": "Pool_2", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8533489324363849, 0.1466510675636151, 0.6508842779557165, 0.7020969777083459, 0.7409638554216867, 0.5803327539111001]}, {"name": "Pool_3", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8559812810763381, 0.1440187189236619, 0.6532394366197184, 0.7105214780317421, 0.7546371623820372, 0.5758629252545319]}],
+                        {"template": {"data": {"bar": [{"error_x": {"color": "#2a3f5f"}, "error_y": {"color": "#2a3f5f"}, "marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "bar"}], "barpolar": [{"marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "barpolar"}], "carpet": [{"aaxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "baxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "type": "carpet"}], "choropleth": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "choropleth"}], "contour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "contour"}], "contourcarpet": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "contourcarpet"}], "heatmap": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "heatmap"}], "heatmapgl": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "heatmapgl"}], "histogram": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "histogram"}], "histogram2d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "histogram2d"}], "histogram2dcontour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "histogram2dcontour"}], "mesh3d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "mesh3d"}], "parcoords": [{"line": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "parcoords"}], "pie": [{"automargin": true, "type": "pie"}], "scatter": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter"}], "scatter3d": [{"line": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter3d"}], "scattercarpet": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattercarpet"}], "scattergeo": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergeo"}], "scattergl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergl"}], "scattermapbox": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattermapbox"}], "scatterpolar": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolar"}], "scatterpolargl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolargl"}], "scatterternary": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterternary"}], "surface": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "surface"}], "table": [{"cells": {"fill": {"color": "#EBF0F8"}, "line": {"color": "white"}}, "header": {"fill": {"color": "#C8D4E3"}, "line": {"color": "white"}}, "type": "table"}]}, "layout": {"annotationdefaults": {"arrowcolor": "#2a3f5f", "arrowhead": 0, "arrowwidth": 1}, "coloraxis": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "colorscale": {"diverging": [[0, "#8e0152"], [0.1, "#c51b7d"], [0.2, "#de77ae"], [0.3, "#f1b6da"], [0.4, "#fde0ef"], [0.5, "#f7f7f7"], [0.6, "#e6f5d0"], [0.7, "#b8e186"], [0.8, "#7fbc41"], [0.9, "#4d9221"], [1, "#276419"]], "sequential": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "sequentialminus": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]]}, "colorway": ["#636efa", "#EF553B", "#00cc96", "#ab63fa", "#FFA15A", "#19d3f3", "#FF6692", "#B6E880", "#FF97FF", "#FECB52"], "font": {"color": "#2a3f5f"}, "geo": {"bgcolor": "white", "lakecolor": "white", "landcolor": "#E5ECF6", "showlakes": true, "showland": true, "subunitcolor": "white"}, "hoverlabel": {"align": "left"}, "hovermode": "closest", "mapbox": {"style": "light"}, "paper_bgcolor": "white", "plot_bgcolor": "#E5ECF6", "polar": {"angularaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "radialaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "scene": {"xaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "yaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "zaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}}, "shapedefaults": {"line": {"color": "#2a3f5f"}}, "ternary": {"aaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "baxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "caxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "title": {"x": 0.05}, "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "title": {"standoff": 15}, "zerolinecolor": "white", "zerolinewidth": 2}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "title": {"standoff": 15}, "zerolinecolor": "white", "zerolinewidth": 2}}}, "title": {"text": "SVM Metric Comparisons"}},
+                        {"responsive": true}
+                    ).then(function(){
+
+var gd = document.getElementById('ff10163d-125d-414d-a917-2f6e13c81ff4');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })
+                };
+                });
+            </script>
+        </div>
+
+
+![SVM_Metrics_Comparisons](./Classification_Notebook_files/SVM_Metrics_Comparisons.png "SVM_Metrics_Comparisons")
+
+After looking further into our SVMs with GridSearhCV applied to find the best parameters to maximize the F1 scores, we see that our baselime model slightly edges out the competition from the different pools that we looked at.  The difference is very miniscule, that we would 
 
 # Summary
 
@@ -2053,18 +2109,19 @@ feat_depth_metrics[10]
 
 
 
-    {'precision': 0.7862513426423201,
-     'recall': 0.5453190961013161,
-     'accuracy': 0.8579701667154138,
-     'f1': 0.6439882697947215,
-     'f_b': 0.7224159484176591,
-     'error': 0.14202983328458613}
+    {'precision': 0.7750961874781392,
+     'recall': 0.5502855723863919,
+     'accuracy': 0.8564492541678853,
+     'f1': 0.6436247458611677,
+     'f_b': 0.7165491819181272,
+     'error': 0.14355074583211466}
 
 
 
 ### Support Vector Machine
 
-In the support vector machine, several things had to be considered when 
+In the support vector machine, several things had to be considered when setting up this model. 
+The
 
 ### Conclusion
 
