@@ -823,117 +823,7 @@ def calc_metrics(labels, preds, beta=0.5):
 # Get all of the string columns within the dataframe
 cols = [col for col in data.columns if data[col].dtype == 'object']
 model_df, col_refs= encode_cat_labels(data, cols)
-
-col_refs
 ```
-
-
-
-
-    {'workclass': {'?': 0,
-      'Federal-gov': 1,
-      'Local-gov': 2,
-      'Never-worked': 3,
-      'Private': 4,
-      'Self-emp-inc': 5,
-      'Self-emp-not-inc': 6,
-      'State-gov': 7,
-      'Without-pay': 8},
-     'education': {'10th': 0,
-      '11th': 1,
-      '12th': 2,
-      '1st-4th': 3,
-      '5th-6th': 4,
-      '7th-8th': 5,
-      '9th': 6,
-      'Assoc-acdm': 7,
-      'Assoc-voc': 8,
-      'Bachelors': 9,
-      'Doctorate': 10,
-      'HS-grad': 11,
-      'Masters': 12,
-      'Preschool': 13,
-      'Prof-school': 14,
-      'Some-college': 15},
-     'marital-status': {'Divorced': 0,
-      'Married-AF-spouse': 1,
-      'Married-civ-spouse': 2,
-      'Married-spouse-absent': 3,
-      'Never-married': 4,
-      'Separated': 5,
-      'Widowed': 6},
-     'occupation': {'?': 0,
-      'Adm-clerical': 1,
-      'Armed-Forces': 2,
-      'Craft-repair': 3,
-      'Exec-managerial': 4,
-      'Farming-fishing': 5,
-      'Handlers-cleaners': 6,
-      'Machine-op-inspct': 7,
-      'Other-service': 8,
-      'Priv-house-serv': 9,
-      'Prof-specialty': 10,
-      'Protective-serv': 11,
-      'Sales': 12,
-      'Tech-support': 13,
-      'Transport-moving': 14},
-     'relationship': {'Husband': 0,
-      'Not-in-family': 1,
-      'Other-relative': 2,
-      'Own-child': 3,
-      'Unmarried': 4,
-      'Wife': 5},
-     'race': {'Amer-Indian-Eskimo': 0,
-      'Asian-Pac-Islander': 1,
-      'Black': 2,
-      'Other': 3,
-      'White': 4},
-     'sex': {'Female': 0, 'Male': 1},
-     'native-country': {'?': 0,
-      'Cambodia': 1,
-      'Canada': 2,
-      'China': 3,
-      'Columbia': 4,
-      'Cuba': 5,
-      'Dominican-Republic': 6,
-      'Ecuador': 7,
-      'El-Salvador': 8,
-      'England': 9,
-      'France': 10,
-      'Germany': 11,
-      'Greece': 12,
-      'Guatemala': 13,
-      'Haiti': 14,
-      'Holand-Netherlands': 15,
-      'Honduras': 16,
-      'Hong': 17,
-      'Hungary': 18,
-      'India': 19,
-      'Iran': 20,
-      'Ireland': 21,
-      'Italy': 22,
-      'Jamaica': 23,
-      'Japan': 24,
-      'Laos': 25,
-      'Mexico': 26,
-      'Nicaragua': 27,
-      'Outlying-US(Guam-USVI-etc)': 28,
-      'Peru': 29,
-      'Philippines': 30,
-      'Poland': 31,
-      'Portugal': 32,
-      'Puerto-Rico': 33,
-      'Scotland': 34,
-      'South': 35,
-      'Taiwan': 36,
-      'Thailand': 37,
-      'Trinadad&Tobago': 38,
-      'United-States': 39,
-      'Vietnam': 40,
-      'Yugoslavia': 41},
-     'class': {'<=50K': 0, '>50K': 1}}
-
-
 
 
 ```python
@@ -1186,7 +1076,7 @@ plt.show()
 
 In the graph above, there seems to be a fair amount of separation between the different classes we are attempting to predict.
 
-After transforming the data, it becomes more visible that there is a high level of correlation between the different targets that we are attempting to predict.
+After transforming the data, it becomes more visible that there is a high level of correlation between the different targets that we are attempting to predict.  There is some level of separation, but not a large one between the differnet classes
 
 
 ```python
@@ -1304,13 +1194,19 @@ def graph_knn_metrics(list_of_neighbors, fsize=(15,8)):
             plt.ylabel('Score')
 ```
 
+
+```python
+# This will be the list to hold the different KNN models, to compare later on
+list_of_best_KNN = []
+```
+
 #### Baseline model without feature scaling
 
 There is an upward and downward trend in our graphs. This is the result of low correlation in our untransformed, train-test split
 
 
 ```python
-list_of_neighbors = generate_knn(x_train, y_train, x_test, y_test, max_k=50)
+list_of_neighbors = generate_knn(x_train, y_train, x_test, y_test, max_k=30)
 ```
 
 
@@ -1319,27 +1215,75 @@ graph_knn_metrics(list_of_neighbors, fsize=(20,5))
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_50_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_51_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_50_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_51_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_50_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_51_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_50_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_51_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_50_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_51_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_50_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_51_5.png)
+
+
+
+```python
+def find_best_score(score='f1', list_of_dict=None, verbose=False):
+    """
+        Small function to return the model with the best metric score 
+        
+        Parameters:
+            score {str}:
+                String that corresponds to the evaluation metric to search for
+            list_of_dict {list}:
+                List containing the dictionaries that have the metrics for the respective models
+        
+        Returns:
+            Dictionary with the metrics and values contained therein, for the respective model
+    """
+    best_f1 = list_of_dict[0].copy()
+    for i in range(1, len(list_of_dict)):
+        if best_f1['f1'] < list_of_dict[i]['f1']:
+            best_f1 = list_of_dict[i].copy()
+            if verbose:
+                print(f'Reassign best_f1. New F1_score:{best_f1["f1"]} index: {i}')
+    return best_f1
+```
+
+
+```python
+best_KNN_f1 = find_best_score(list_of_dict=list_of_neighbors)
+best_KNN_f1['title'] = "Baseline_no_scaling_KNN"
+if best_KNN_f1 not in list_of_best_KNN:
+    list_of_best_KNN.append(best_KNN_f1)
+    
+list_of_best_KNN
+```
+
+
+
+
+    [{'precision': 0.43935873605947956,
+      'recall': 0.4695803327539111,
+      'accuracy': 0.7338988008189529,
+      'f1': 0.4539671107910214,
+      'f_b': 0.44508779362613576,
+      'error': 0.2661011991810471,
+      'k': 1,
+      'title': 'Baseline_no_scaling_KNN'}]
+
 
 
 #### Model with feature scaling
@@ -1349,7 +1293,7 @@ It was interesting to see that the precision of the model began to plateau as a 
 
 
 ```python
-list_of_neighbors = generate_knn(scaled_data_train, y_train, scaled_data_test, y_test, max_k=50)
+list_of_neighbors = generate_knn(scaled_data_train, y_train, scaled_data_test, y_test, max_k=30)
 ```
 
 
@@ -1358,32 +1302,254 @@ graph_knn_metrics(list_of_neighbors, fsize=(20,5))
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_53_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_56_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_53_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_56_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_53_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_56_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_53_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_56_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_53_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_56_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_53_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_56_5.png)
+
+
+
+```python
+## Lines of code to find_best_scoreblist_of_dict=add the best KNN model to our list
+best_KNN_f1 = find_best_score(list_of_dict=list_of_neighbors)
+best_KNN_f1['title'] = "KNN_scaled"
+if best_KNN_f1 not in list_of_best_KNN:
+    list_of_best_KNN.append(best_KNN_f1)
+    print('item added to list')
+    
+list_of_best_KNN
+```
+
+    Reassign best_f1. New F1_score:0.6187660668380464 index: 2
+    Reassign best_f1. New F1_score:0.6292370108624527 index: 4
+    Reassign best_f1. New F1_score:0.6380384360503645 index: 6
+    Reassign best_f1. New F1_score:0.6385946090921282 index: 10
+    Reassign best_f1. New F1_score:0.6400647074683203 index: 12
+    Reassign best_f1. New F1_score:0.6410396716826265 index: 20
+    item added to list
+    
+
+
+
+
+    [{'precision': 0.43935873605947956,
+      'recall': 0.4695803327539111,
+      'accuracy': 0.7338988008189529,
+      'f1': 0.4539671107910214,
+      'f_b': 0.44508779362613576,
+      'error': 0.2661011991810471,
+      'k': 1,
+      'title': 'Baseline_no_scaling_KNN'},
+     {'precision': 0.7136765153822723,
+      'recall': 0.5818226967966228,
+      'accuracy': 0.8465048259725065,
+      'f1': 0.6410396716826265,
+      'f_b': 0.6827320939448684,
+      'error': 0.1534951740274934,
+      'k': 21,
+      'title': 'KNN_scaled'}]
+
+
+
+#### KNN with Grid SearchCV using scaled data
+
+
+```python
+param_grid = {
+    'n_neighbors': list(range(5,21,2)),
+    'p': [1,2,3],
+    'weights': ['uniform','distance']
+}
+
+grid = GridSearchCV(KNeighborsClassifier(), param_grid=param_grid, scoring='f1', verbose=True, n_jobs=-1)
+grid.fit(scaled_data_train, y_train)
+```
+
+
+```python
+print(grid.best_score_)
+print(grid.best_params_)
+print(grid.best_estimator_)
+```
+
+###### Best parameters from KNN GridSearchCV
+Best F1_score: 0.6253623110482003 <br>
+Best parameters: `{'n_neighbors': 19, 'p': 1, 'weights': 'distance'}` <br>
+Best Estimator: `KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+                     metric_params=None, n_jobs=None, n_neighbors=19, p=1,
+                     weights='distance')`
+
+
+```python
+clf = KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski', 
+                           metric_params=None, n_jobs=-1, n_neighbors=19, p=1, weights='distance')
+clf.fit(scaled_data_train, y_train)
+y_preds = clf.predict(scaled_data_test)
+
+best_KNN_grid = calc_metrics(labels=y_test, preds=y_preds)
+best_KNN_grid['title'] = 'Best_grid_KNN'
+best_KNN_grid['k'] = clf.n_neighbors
+```
+
+
+```python
+best_KNN_grid
+```
+
+
+
+
+    {'precision': 0.70543093270366,
+     'recall': 0.5934939160665508,
+     'accuracy': 0.8458613629716292,
+     'f1': 0.6446392447741065,
+     'f_b': 0.6797883838671143,
+     'error': 0.15413863702837086,
+     'title': 'Best_grid_KNN',
+     'k': 19}
+
+
+
+
+```python
+if best_KNN_f1 not in list_of_best_KNN:
+    list_of_best_KNN.append(best_KNN_grid)
+list_of_best_KNN
+```
+
+
+
+
+    [{'precision': 0.43935873605947956,
+      'recall': 0.4695803327539111,
+      'accuracy': 0.7338988008189529,
+      'f1': 0.4539671107910214,
+      'f_b': 0.44508779362613576,
+      'error': 0.2661011991810471,
+      'k': 1,
+      'title': 'Baseline_no_scaling_KNN'},
+     {'precision': 0.7136765153822723,
+      'recall': 0.5818226967966228,
+      'accuracy': 0.8465048259725065,
+      'f1': 0.6410396716826265,
+      'f_b': 0.6827320939448684,
+      'error': 0.1534951740274934,
+      'k': 21,
+      'title': 'KNN_scaled'},
+     {'precision': 0.70543093270366,
+      'recall': 0.5934939160665508,
+      'accuracy': 0.8458613629716292,
+      'f1': 0.6446392447741065,
+      'f_b': 0.6797883838671143,
+      'error': 0.15413863702837086,
+      'title': 'Best_grid_KNN',
+      'k': 19}]
+
+
+
+### Comparison of KNN Metrics
+
+
+```python
+def graph_metrics_comparison(list_of_dict=None, exclusion_list=None, title_of_graph=''):
+
+    df = pd.DataFrame([knn for knn in list_of_dict])
+    df.set_index(keys='title', inplace=True)
+
+    # Setup the featuers to plot for the respective models within our list of dictionaries
+    if exclusion_list:
+        x = [key for key in df.columns if key not in exclusion_list]
+    else:
+        x = [key for key in df.columns]
+        
+    names = list(df.index)
+    
+    fig = go.Figure()
+
+    for name in names:
+        fig.add_trace(go.Bar(x=x, 
+                             y=df[df.index==name][x].values.reshape(-1), 
+                             name=name))
+    fig.update_layout(title_text=title_of_graph)
+    fig.show()
+```
+
+
+```python
+graph_metrics_comparison(list_of_dict=list_of_best_KNN, exclusion_list=['k'], title_of_graph='Best KNN Metrics Comparisons')
+```
+
+
+<div>
+
+
+            <div id="96f960ab-9319-4689-a6ca-5b8572d86f25" class="plotly-graph-div" style="height:525px; width:100%;"></div>
+            <script type="text/javascript">
+                require(["plotly"], function(Plotly) {
+                    window.PLOTLYENV=window.PLOTLYENV || {};
+
+                if (document.getElementById("96f960ab-9319-4689-a6ca-5b8572d86f25")) {
+                    Plotly.newPlot(
+                        '96f960ab-9319-4689-a6ca-5b8572d86f25',
+                        [{"name": "Baseline_no_scaling_KNN", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.7338988008189529, 0.2661011991810471, 0.4539671107910214, 0.44508779362613576, 0.43935873605947956, 0.4695803327539111]}, {"name": "KNN_scaled", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8465048259725065, 0.1534951740274934, 0.6410396716826265, 0.6827320939448684, 0.7136765153822723, 0.5818226967966228]}, {"name": "Best_grid_KNN", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8458613629716292, 0.15413863702837086, 0.6446392447741065, 0.6797883838671143, 0.70543093270366, 0.5934939160665508]}],
+                        {"template": {"data": {"bar": [{"error_x": {"color": "#2a3f5f"}, "error_y": {"color": "#2a3f5f"}, "marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "bar"}], "barpolar": [{"marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "barpolar"}], "carpet": [{"aaxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "baxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "type": "carpet"}], "choropleth": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "choropleth"}], "contour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "contour"}], "contourcarpet": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "contourcarpet"}], "heatmap": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "heatmap"}], "heatmapgl": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "heatmapgl"}], "histogram": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "histogram"}], "histogram2d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "histogram2d"}], "histogram2dcontour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "histogram2dcontour"}], "mesh3d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "mesh3d"}], "parcoords": [{"line": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "parcoords"}], "pie": [{"automargin": true, "type": "pie"}], "scatter": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter"}], "scatter3d": [{"line": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter3d"}], "scattercarpet": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattercarpet"}], "scattergeo": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergeo"}], "scattergl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergl"}], "scattermapbox": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattermapbox"}], "scatterpolar": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolar"}], "scatterpolargl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolargl"}], "scatterternary": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterternary"}], "surface": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "surface"}], "table": [{"cells": {"fill": {"color": "#EBF0F8"}, "line": {"color": "white"}}, "header": {"fill": {"color": "#C8D4E3"}, "line": {"color": "white"}}, "type": "table"}]}, "layout": {"annotationdefaults": {"arrowcolor": "#2a3f5f", "arrowhead": 0, "arrowwidth": 1}, "coloraxis": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "colorscale": {"diverging": [[0, "#8e0152"], [0.1, "#c51b7d"], [0.2, "#de77ae"], [0.3, "#f1b6da"], [0.4, "#fde0ef"], [0.5, "#f7f7f7"], [0.6, "#e6f5d0"], [0.7, "#b8e186"], [0.8, "#7fbc41"], [0.9, "#4d9221"], [1, "#276419"]], "sequential": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "sequentialminus": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]]}, "colorway": ["#636efa", "#EF553B", "#00cc96", "#ab63fa", "#FFA15A", "#19d3f3", "#FF6692", "#B6E880", "#FF97FF", "#FECB52"], "font": {"color": "#2a3f5f"}, "geo": {"bgcolor": "white", "lakecolor": "white", "landcolor": "#E5ECF6", "showlakes": true, "showland": true, "subunitcolor": "white"}, "hoverlabel": {"align": "left"}, "hovermode": "closest", "mapbox": {"style": "light"}, "paper_bgcolor": "white", "plot_bgcolor": "#E5ECF6", "polar": {"angularaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "radialaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "scene": {"xaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "yaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "zaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}}, "shapedefaults": {"line": {"color": "#2a3f5f"}}, "ternary": {"aaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "baxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "caxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "title": {"x": 0.05}, "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "title": {"standoff": 15}, "zerolinecolor": "white", "zerolinewidth": 2}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "title": {"standoff": 15}, "zerolinecolor": "white", "zerolinewidth": 2}}}, "title": {"text": "Best KNN Metrics Comparisons"}},
+                        {"responsive": true}
+                    ).then(function(){
+
+var gd = document.getElementById('96f960ab-9319-4689-a6ca-5b8572d86f25');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })
+                };
+                });
+            </script>
+        </div>
 
 
 ## Decision Tree Modeling
 
 In this section, we will setup a base decision tree and also attempt to increase the performance of the tree via the following hyper parametres: `max_depth` and `max_features`
+
+
+```python
+list_of_best_DT = []
+```
 
 #### Base decision tree
 
@@ -1392,20 +1558,12 @@ In this section, we will setup a base decision tree and also attempt to increase
 clf = DecisionTreeClassifier(criterion='entropy')
 clf.fit(scaled_data_train, y_train)
 y_preds = clf.predict(scaled_data_test)
-calc_metrics(y_test, y_preds)
+
+best_DT_metrics = calc_metrics(y_test, y_preds)
+best_DT_metrics['title'] = 'Baseline_DT'
+
+list_of_best_DT.append(best_DT_metrics)
 ```
-
-
-
-
-    {'precision': 0.605764649833254,
-     'recall': 0.6314874596473802,
-     'accuracy': 0.8163790582041532,
-     'f1': 0.6183586626139818,
-     'f_b': 0.6107401892502041,
-     'error': 0.18362094179584673}
-
-
 
 ### Decision Tree with hyper parameter tunning: `max_features` 
 
@@ -1444,99 +1602,7 @@ for i in range(1, len(model_df.columns)+1 ):
     y_preds = clf.predict(scaled_data_test)
 
     max_feat_metrics.append(calc_metrics(y_test, y_preds))
-
-max_feat_metrics
 ```
-
-
-
-
-    [{'precision': 0.5952323035757723,
-      'recall': 0.6076483734790167,
-      'accuracy': 0.8102369113775958,
-      'f1': 0.6013762595232244,
-      'f_b': 0.5976747594157589,
-      'error': 0.1897630886224042},
-     {'precision': 0.6059658407505413,
-      'recall': 0.6255276881052892,
-      'accuracy': 0.8159695817490494,
-      'f1': 0.6155913978494624,
-      'f_b': 0.6097797143548779,
-      'error': 0.18403041825095057},
-     {'precision': 0.5991824957922578,
-      'recall': 0.618822945120437,
-      'accuracy': 0.8126937701082187,
-      'f1': 0.6088443684339115,
-      'f_b': 0.6030102114891353,
-      'error': 0.18730622989178122},
-     {'precision': 0.6100265124126295,
-      'recall': 0.6285075738763347,
-      'accuracy': 0.8178414741152383,
-      'f1': 0.6191291585127201,
-      'f_b': 0.6136352616011249,
-      'error': 0.1821585258847616},
-     {'precision': 0.6191396810053166,
-      'recall': 0.6362056121182021,
-      'accuracy': 0.8221117285756069,
-      'f1': 0.6275566442131048,
-      'f_b': 0.6224792263958404,
-      'error': 0.1778882714243931},
-     {'precision': 0.6128488931665063,
-      'recall': 0.6324807549043954,
-      'accuracy': 0.8193038900263235,
-      'f1': 0.6225100818770621,
-      'f_b': 0.6166771584911142,
-      'error': 0.18069610997367652},
-     {'precision': 0.611969111969112,
-      'recall': 0.6297491929476037,
-      'accuracy': 0.8187189236618895,
-      'f1': 0.6207318565659039,
-      'f_b': 0.6154443527641605,
-      'error': 0.18128107633811055},
-     {'precision': 0.6162005785920925,
-      'recall': 0.6347156692326794,
-      'accuracy': 0.820824802573852,
-      'f1': 0.6253211009174312,
-      'f_b': 0.6198166739415102,
-      'error': 0.179175197426148},
-     {'precision': 0.6125995655322231,
-      'recall': 0.6302458405761112,
-      'accuracy': 0.8190114068441064,
-      'f1': 0.621297429620563,
-      'f_b': 0.6160493227826593,
-      'error': 0.18098859315589352},
-     {'precision': 0.6050260787102892,
-      'recall': 0.6337223739756642,
-      'accuracy': 0.8162620649312664,
-      'f1': 0.6190418435415403,
-      'f_b': 0.6105555289726782,
-      'error': 0.18373793506873354},
-     {'precision': 0.6195652173913043,
-      'recall': 0.6511050409734294,
-      'accuracy': 0.8236326411231354,
-      'f1': 0.6349436977842354,
-      'f_b': 0.6256263421617752,
-      'error': 0.17636735887686458},
-     {'precision': 0.604756242568371,
-      'recall': 0.6314874596473802,
-      'accuracy': 0.8159695817490494,
-      'f1': 0.617832847424684,
-      'f_b': 0.6099198925504868,
-      'error': 0.18403041825095057},
-     {'precision': 0.6108608015176666,
-      'recall': 0.6396821455177552,
-      'accuracy': 0.8191284001169933,
-      'f1': 0.6249393498301795,
-      'f_b': 0.6164154103852597,
-      'error': 0.18087159988300672},
-     {'precision': 0.6062692947043458,
-      'recall': 0.6339706977899181,
-      'accuracy': 0.816788534659257,
-      'f1': 0.619810633648944,
-      'f_b': 0.6116142015236451,
-      'error': 0.1832114653407429}]
-
-
 
 
 ```python
@@ -1544,27 +1610,67 @@ graph_dt_metrics(max_feat_metrics, fsize=(13,5), title='Max_Features', x_label='
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_61_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_76_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_61_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_76_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_61_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_76_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_61_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_76_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_61_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_76_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_61_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_76_5.png)
+
+
+
+```python
+best_max_feat_DT = find_best_score(list_of_dict=max_feat_metrics)
+best_max_feat_DT['title'] = 'max_features_DT'
+
+if best_max_feat_DT not in list_of_best_DT:
+    list_of_best_DT.append(best_max_feat_DT)
+```
+
+    Reassign best_f1. New F1_score:0.6135888929843961 index: 1
+    Reassign best_f1. New F1_score:0.6181369524984577 index: 2
+    Reassign best_f1. New F1_score:0.6232717484399853 index: 4
+    Reassign best_f1. New F1_score:0.6262135922330097 index: 5
+    
+
+
+```python
+list_of_best_DT
+```
+
+
+
+
+    [{'precision': 0.6091017964071856,
+      'recall': 0.6314874596473802,
+      'accuracy': 0.8177244808423516,
+      'f1': 0.6200926603267496,
+      'f_b': 0.6134510541805374,
+      'error': 0.18227551915764845,
+      'title': 'Baseline_DT'},
+     {'precision': 0.6123902207453121,
+      'recall': 0.6406754407747703,
+      'accuracy': 0.8198303597543142,
+      'f1': 0.6262135922330097,
+      'f_b': 0.6178456822644762,
+      'error': 0.18016964024568588,
+      'title': 'max_features_DT'}]
+
 
 
 ### Decision Tree hyper parameter tunning: `max_depth`
@@ -1592,27 +1698,78 @@ graph_dt_metrics(max_depth_metrics, fsize=(15,5), title='Decision Tree', x_label
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_64_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_81_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_64_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_81_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_64_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_81_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_64_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_81_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_64_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_81_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_64_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_81_5.png)
+
+
+
+```python
+best_max_depth_DT = find_best_score(list_of_dict=max_depth_metrics)
+best_max_depth_DT['title'] = 'max_depth_DT'
+
+if best_max_depth_DT not in list_of_best_DT:
+    list_of_best_DT.append(best_max_depth_DT)
+```
+
+    Reassign best_f1. New F1_score:0.5394757744241462 index: 1
+    Reassign best_f1. New F1_score:0.593520782396088 index: 2
+    Reassign best_f1. New F1_score:0.6224310041103934 index: 3
+    Reassign best_f1. New F1_score:0.636283185840708 index: 4
+    Reassign best_f1. New F1_score:0.6368764845605701 index: 5
+    Reassign best_f1. New F1_score:0.642962962962963 index: 6
+    Reassign best_f1. New F1_score:0.6476972719272515 index: 8
+    Reassign best_f1. New F1_score:0.668682149237323 index: 10
+    
+
+
+```python
+list_of_best_DT
+```
+
+
+
+
+    [{'precision': 0.6091017964071856,
+      'recall': 0.6314874596473802,
+      'accuracy': 0.8177244808423516,
+      'f1': 0.6200926603267496,
+      'f_b': 0.6134510541805374,
+      'error': 0.18227551915764845,
+      'title': 'Baseline_DT'},
+     {'precision': 0.6123902207453121,
+      'recall': 0.6406754407747703,
+      'accuracy': 0.8198303597543142,
+      'f1': 0.6262135922330097,
+      'f_b': 0.6178456822644762,
+      'error': 0.18016964024568588,
+      'title': 'max_features_DT'},
+     {'precision': 0.7486153846153846,
+      'recall': 0.6041718400794637,
+      'accuracy': 0.8589646095349518,
+      'f1': 0.668682149237323,
+      'f_b': 0.7144535150055794,
+      'error': 0.14103539046504826,
+      'title': 'max_depth_DT'}]
+
 
 
 ### Decision tree hyper parameter tunning: `max_features: 12` & `max_depth`
@@ -1641,43 +1798,86 @@ graph_dt_metrics(feat_depth_metrics, title="Max_feat: 12", x_label='max_depth', 
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_67_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_86_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_67_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_86_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_67_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_86_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_67_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_86_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_67_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_86_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_67_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_86_5.png)
 
 
 
 ```python
-feat_depth_metrics[10]
+best_max_depth_feat_DT = find_best_score(list_of_dict=feat_depth_metrics)
+best_max_depth_feat_DT['title'] = 'max_feat12_depth_DT'
+
+if best_max_depth_feat_DT not in list_of_best_DT:
+    list_of_best_DT.append(best_max_depth_feat_DT)
+```
+
+    Reassign best_f1. New F1_score:0.33264633140972794 index: 1
+    Reassign best_f1. New F1_score:0.593520782396088 index: 2
+    Reassign best_f1. New F1_score:0.6229652441706995 index: 3
+    Reassign best_f1. New F1_score:0.6359216148519228 index: 4
+    Reassign best_f1. New F1_score:0.6384364820846905 index: 5
+    Reassign best_f1. New F1_score:0.6426666666666666 index: 6
+    Reassign best_f1. New F1_score:0.6454016992100164 index: 7
+    Reassign best_f1. New F1_score:0.6472226293419316 index: 9
+    Reassign best_f1. New F1_score:0.6683966129472823 index: 10
+    Reassign best_f1. New F1_score:0.6722871906445472 index: 12
+    
+
+
+```python
+list_of_best_DT
 ```
 
 
 
 
-    {'precision': 0.7644588045234249,
-     'recall': 0.5875341445244598,
-     'accuracy': 0.8601930389002632,
-     'f1': 0.6644201067115978,
-     'f_b': 0.721033705125861,
-     'error': 0.13980696109973675}
+    [{'precision': 0.6091017964071856,
+      'recall': 0.6314874596473802,
+      'accuracy': 0.8177244808423516,
+      'f1': 0.6200926603267496,
+      'f_b': 0.6134510541805374,
+      'error': 0.18227551915764845,
+      'title': 'Baseline_DT'},
+     {'precision': 0.6123902207453121,
+      'recall': 0.6406754407747703,
+      'accuracy': 0.8198303597543142,
+      'f1': 0.6262135922330097,
+      'f_b': 0.6178456822644762,
+      'error': 0.18016964024568588,
+      'title': 'max_features_DT'},
+     {'precision': 0.7486153846153846,
+      'recall': 0.6041718400794637,
+      'accuracy': 0.8589646095349518,
+      'f1': 0.668682149237323,
+      'f_b': 0.7144535150055794,
+      'error': 0.14103539046504826,
+      'title': 'max_depth_DT'},
+     {'precision': 0.7430117222723174,
+      'recall': 0.6138564688353613,
+      'accuracy': 0.8590231061713951,
+      'f1': 0.6722871906445472,
+      'f_b': 0.7130083645803289,
+      'error': 0.14097689382860484,
+      'title': 'max_feat12_depth_DT'}]
 
 
 
@@ -1706,27 +1906,434 @@ graph_dt_metrics(feat_depth_metrics, title="Max_feat: 9", x_label='max_depth', f
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_71_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_91_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_71_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_91_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_71_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_91_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_71_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_91_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_71_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_91_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_71_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_91_5.png)
+
+
+
+```python
+best_max_depth_feat_DT = find_best_score(list_of_dict=feat_depth_metrics)
+best_max_depth_feat_DT['title'] = 'max_feat9_depth_DT'
+
+if best_max_depth_feat_DT not in list_of_best_DT:
+    list_of_best_DT.append(best_max_depth_feat_DT)
+```
+
+    Reassign best_f1. New F1_score:0.4849686157912124 index: 1
+    Reassign best_f1. New F1_score:0.6074714245887928 index: 2
+    Reassign best_f1. New F1_score:0.6213420041383387 index: 4
+    Reassign best_f1. New F1_score:0.6419460100860278 index: 5
+    Reassign best_f1. New F1_score:0.6459154546690227 index: 7
+    Reassign best_f1. New F1_score:0.6487998821970254 index: 8
+    Reassign best_f1. New F1_score:0.6529428819947811 index: 10
+    Reassign best_f1. New F1_score:0.6693270950873814 index: 11
+    Reassign best_f1. New F1_score:0.6869542886492039 index: 12
+    
+
+
+```python
+list_of_best_DT
+```
+
+
+
+
+    [{'precision': 0.6091017964071856,
+      'recall': 0.6314874596473802,
+      'accuracy': 0.8177244808423516,
+      'f1': 0.6200926603267496,
+      'f_b': 0.6134510541805374,
+      'error': 0.18227551915764845,
+      'title': 'Baseline_DT'},
+     {'precision': 0.6123902207453121,
+      'recall': 0.6406754407747703,
+      'accuracy': 0.8198303597543142,
+      'f1': 0.6262135922330097,
+      'f_b': 0.6178456822644762,
+      'error': 0.18016964024568588,
+      'title': 'max_features_DT'},
+     {'precision': 0.7486153846153846,
+      'recall': 0.6041718400794637,
+      'accuracy': 0.8589646095349518,
+      'f1': 0.668682149237323,
+      'f_b': 0.7144535150055794,
+      'error': 0.14103539046504826,
+      'title': 'max_depth_DT'},
+     {'precision': 0.7430117222723174,
+      'recall': 0.6138564688353613,
+      'accuracy': 0.8590231061713951,
+      'f1': 0.6722871906445472,
+      'f_b': 0.7130083645803289,
+      'error': 0.14097689382860484,
+      'title': 'max_feat12_depth_DT'},
+     {'precision': 0.7112470087742622,
+      'recall': 0.6642662031288801,
+      'accuracy': 0.8573852003509799,
+      'f1': 0.6869542886492039,
+      'f_b': 0.7013266215720204,
+      'error': 0.14261479964902019,
+      'title': 'max_feat9_depth_DT'}]
+
+
+
+### Decision Tree with GridSearchCV
+
+_Pool_1_DT_
+
+
+```python
+param_grid = {
+    'criterion':['gini','entropy'],
+    'splitter': ['best','random'],
+    'max_features': list(range(1, len(model_df.columns)+1)),
+    'min_samples_split': list(range(1,25))
+    }
+
+grid = GridSearchCV(DecisionTreeClassifier(), verbose=True,
+                    param_grid=param_grid, scoring='f1', n_jobs=-1)
+grid.fit(scaled_data_train, y_train)
+```
+
+    Fitting 5 folds for each of 1344 candidates, totalling 6720 fits
+    
+
+    [Parallel(n_jobs=-1)]: Using backend LokyBackend with 4 concurrent workers.
+    [Parallel(n_jobs=-1)]: Done  44 tasks      | elapsed:    4.6s
+    [Parallel(n_jobs=-1)]: Done 344 tasks      | elapsed:   11.9s
+    [Parallel(n_jobs=-1)]: Done 844 tasks      | elapsed:   26.0s
+    [Parallel(n_jobs=-1)]: Done 1544 tasks      | elapsed:   52.0s
+    [Parallel(n_jobs=-1)]: Done 2444 tasks      | elapsed:  1.5min
+    [Parallel(n_jobs=-1)]: Done 3544 tasks      | elapsed:  2.7min
+    [Parallel(n_jobs=-1)]: Done 4844 tasks      | elapsed:  4.0min
+    [Parallel(n_jobs=-1)]: Done 6344 tasks      | elapsed:  5.6min
+    [Parallel(n_jobs=-1)]: Done 6720 out of 6720 | elapsed:  6.1min finished
+    
+
+
+
+
+    GridSearchCV(cv=None, error_score=nan,
+                 estimator=DecisionTreeClassifier(ccp_alpha=0.0, class_weight=None,
+                                                  criterion='gini', max_depth=None,
+                                                  max_features=None,
+                                                  max_leaf_nodes=None,
+                                                  min_impurity_decrease=0.0,
+                                                  min_impurity_split=None,
+                                                  min_samples_leaf=1,
+                                                  min_samples_split=2,
+                                                  min_weight_fraction_leaf=0.0,
+                                                  presort='deprecated',
+                                                  random_state=None,
+                                                  splitter='best'),
+                 iid='deprecated', n_jobs=-1,
+                 param_grid={'criterion': ['gini', 'entropy'],
+                             'max_features': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                                              13, 14],
+                             'min_samples_split': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                                                   11, 12, 13, 14, 15, 16, 17, 18,
+                                                   19, 20, 21, 22, 23, 24],
+                             'splitter': ['best', 'random']},
+                 pre_dispatch='2*n_jobs', refit=True, return_train_score=False,
+                 scoring='f1', verbose=True)
+
+
+
+
+```python
+print(grid.best_score_)
+print(grid.best_params_)
+print(grid.best_estimator_)
+```
+
+    0.6397521915905973
+    {'criterion': 'gini', 'max_features': 6, 'min_samples_split': 24, 'splitter': 'best'}
+    DecisionTreeClassifier(ccp_alpha=0.0, class_weight=None, criterion='gini',
+                           max_depth=None, max_features=6, max_leaf_nodes=None,
+                           min_impurity_decrease=0.0, min_impurity_split=None,
+                           min_samples_leaf=1, min_samples_split=24,
+                           min_weight_fraction_leaf=0.0, presort='deprecated',
+                           random_state=None, splitter='best')
+    
+
+
+```python
+clf = DecisionTreeClassifier(ccp_alpha=0.0, class_weight=None, criterion='gini',
+                       max_depth=None, max_features=6, max_leaf_nodes=None,
+                       min_impurity_decrease=0.0, min_impurity_split=None,
+                       min_samples_leaf=1, min_samples_split=24,
+                       min_weight_fraction_leaf=0.0, presort='deprecated',
+                       random_state=None, splitter='best')
+clf.fit(scaled_data_train, y_train)
+y_preds = clf.predict(scaled_data_test)
+
+tree = calc_metrics(y_test, y_preds)
+tree['title'] = "Pool_1_grid_DT"
+
+if tree not in list_of_best_DT:
+    list_of_best_DT.append(tree)
+```
+
+_Pool_2_DT_
+
+
+```python
+param_grid = {
+    'criterion':['gini','entropy'],
+    'splitter': ['best','random'],
+    'max_features': list(range(1, len(model_df.columns)+1)),
+    'min_samples_split': list(range(25, 50))
+    }
+grid = GridSearchCV(DecisionTreeClassifier(), verbose=True, 
+                    param_grid=param_grid, scoring='f1', n_jobs=-1)
+grid.fit(scaled_data_train, y_train)
+```
+
+    Fitting 5 folds for each of 1400 candidates, totalling 7000 fits
+    
+
+    [Parallel(n_jobs=-1)]: Using backend LokyBackend with 4 concurrent workers.
+    [Parallel(n_jobs=-1)]: Done  76 tasks      | elapsed:    1.9s
+    [Parallel(n_jobs=-1)]: Done 376 tasks      | elapsed:    9.0s
+    [Parallel(n_jobs=-1)]: Done 876 tasks      | elapsed:   23.9s
+    [Parallel(n_jobs=-1)]: Done 1576 tasks      | elapsed:   51.0s
+    [Parallel(n_jobs=-1)]: Done 2476 tasks      | elapsed:  1.7min
+    [Parallel(n_jobs=-1)]: Done 3576 tasks      | elapsed:  3.0min
+    [Parallel(n_jobs=-1)]: Done 4876 tasks      | elapsed:  3.8min
+    [Parallel(n_jobs=-1)]: Done 6376 tasks      | elapsed:  5.1min
+    [Parallel(n_jobs=-1)]: Done 7000 out of 7000 | elapsed:  5.7min finished
+    
+
+
+
+
+    GridSearchCV(cv=None, error_score=nan,
+                 estimator=DecisionTreeClassifier(ccp_alpha=0.0, class_weight=None,
+                                                  criterion='gini', max_depth=None,
+                                                  max_features=None,
+                                                  max_leaf_nodes=None,
+                                                  min_impurity_decrease=0.0,
+                                                  min_impurity_split=None,
+                                                  min_samples_leaf=1,
+                                                  min_samples_split=2,
+                                                  min_weight_fraction_leaf=0.0,
+                                                  presort='deprecated',
+                                                  random_state=None,
+                                                  splitter='best'),
+                 iid='deprecated', n_jobs=-1,
+                 param_grid={'criterion': ['gini', 'entropy'],
+                             'max_features': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                                              13, 14],
+                             'min_samples_split': [25, 26, 27, 28, 29, 30, 31, 32,
+                                                   33, 34, 35, 36, 37, 38, 39, 40,
+                                                   41, 42, 43, 44, 45, 46, 47, 48,
+                                                   49],
+                             'splitter': ['best', 'random']},
+                 pre_dispatch='2*n_jobs', refit=True, return_train_score=False,
+                 scoring='f1', verbose=True)
+
+
+
+
+```python
+print(grid.best_score_)
+print(grid.best_params_)
+print(grid.best_estimator_)
+```
+
+    0.6518534340943835
+    {'criterion': 'gini', 'max_features': 5, 'min_samples_split': 43, 'splitter': 'best'}
+    DecisionTreeClassifier(ccp_alpha=0.0, class_weight=None, criterion='gini',
+                           max_depth=None, max_features=5, max_leaf_nodes=None,
+                           min_impurity_decrease=0.0, min_impurity_split=None,
+                           min_samples_leaf=1, min_samples_split=43,
+                           min_weight_fraction_leaf=0.0, presort='deprecated',
+                           random_state=None, splitter='best')
+    
+
+
+```python
+clf = DecisionTreeClassifier(ccp_alpha=0.0, class_weight=None, criterion='gini',
+                       max_depth=None, max_features=6, max_leaf_nodes=None,
+                       min_impurity_decrease=0.0, min_impurity_split=None,
+                       min_samples_leaf=1, min_samples_split=24,
+                       min_weight_fraction_leaf=0.0, presort='deprecated',
+                       random_state=None, splitter='best')
+clf.fit(scaled_data_train, y_train)
+y_preds = clf.predict(scaled_data_test)
+
+tree = calc_metrics(y_test, y_preds)
+tree['title'] = "Pool_2_grid_DT"
+
+if tree not in list_of_best_DT:
+    list_of_best_DT.append(tree)
+```
+
+_Pool_3_DT_
+
+
+```python
+param_grid = {
+    'criterion':['gini','entropy'],
+    'splitter': ['best','random'],
+    'max_features': list(range(1, len(model_df.columns)+1)),
+    'min_samples_split': list(range(49,55)),
+    'max_depth': list(range(10,20))
+    }
+
+grid = GridSearchCV(DecisionTreeClassifier(), verbose=True,
+                    param_grid=param_grid, scoring='f1', n_jobs=-1)
+grid.fit(scaled_data_train, y_train)
+```
+
+    Fitting 5 folds for each of 3360 candidates, totalling 16800 fits
+    
+
+    [Parallel(n_jobs=-1)]: Using backend LokyBackend with 4 concurrent workers.
+    [Parallel(n_jobs=-1)]: Done 128 tasks      | elapsed:    1.9s
+    [Parallel(n_jobs=-1)]: Done 728 tasks      | elapsed:   18.6s
+    [Parallel(n_jobs=-1)]: Done 1728 tasks      | elapsed:   46.8s
+    [Parallel(n_jobs=-1)]: Done 3128 tasks      | elapsed:  1.4min
+    [Parallel(n_jobs=-1)]: Done 4928 tasks      | elapsed:  2.4min
+    [Parallel(n_jobs=-1)]: Done 7128 tasks      | elapsed:  3.5min
+    [Parallel(n_jobs=-1)]: Done 9728 tasks      | elapsed:  4.9min
+    [Parallel(n_jobs=-1)]: Done 12728 tasks      | elapsed:  6.5min
+    [Parallel(n_jobs=-1)]: Done 15956 tasks      | elapsed:  8.3min
+    [Parallel(n_jobs=-1)]: Done 16800 out of 16800 | elapsed:  8.8min finished
+    
+
+
+
+
+    GridSearchCV(cv=None, error_score=nan,
+                 estimator=DecisionTreeClassifier(ccp_alpha=0.0, class_weight=None,
+                                                  criterion='gini', max_depth=None,
+                                                  max_features=None,
+                                                  max_leaf_nodes=None,
+                                                  min_impurity_decrease=0.0,
+                                                  min_impurity_split=None,
+                                                  min_samples_leaf=1,
+                                                  min_samples_split=2,
+                                                  min_weight_fraction_leaf=0.0,
+                                                  presort='deprecated',
+                                                  random_state=None,
+                                                  splitter='best'),
+                 iid='deprecated', n_jobs=-1,
+                 param_grid={'criterion': ['gini', 'entropy'],
+                             'max_depth': [10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+                             'max_features': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                                              13, 14],
+                             'min_samples_split': [49, 50, 51, 52, 53, 54],
+                             'splitter': ['best', 'random']},
+                 pre_dispatch='2*n_jobs', refit=True, return_train_score=False,
+                 scoring='f1', verbose=True)
+
+
+
+
+```python
+print(grid.best_score_)
+print(grid.best_params_)
+print(grid.best_estimator_)
+```
+
+    0.6609180946163788
+    {'criterion': 'entropy', 'max_depth': 18, 'max_features': 7, 'min_samples_split': 52, 'splitter': 'best'}
+    DecisionTreeClassifier(ccp_alpha=0.0, class_weight=None, criterion='entropy',
+                           max_depth=18, max_features=7, max_leaf_nodes=None,
+                           min_impurity_decrease=0.0, min_impurity_split=None,
+                           min_samples_leaf=1, min_samples_split=52,
+                           min_weight_fraction_leaf=0.0, presort='deprecated',
+                           random_state=None, splitter='best')
+    
+
+
+```python
+clf = DecisionTreeClassifier(ccp_alpha=0.0, class_weight=None, criterion='gini',
+                       max_depth=None, max_features=6, max_leaf_nodes=None,
+                       min_impurity_decrease=0.0, min_impurity_split=None,
+                       min_samples_leaf=1, min_samples_split=24,
+                       min_weight_fraction_leaf=0.0, presort='deprecated',
+                       random_state=None, splitter='best')
+clf.fit(scaled_data_train, y_train)
+y_preds = clf.predict(scaled_data_test)
+
+tree = calc_metrics(y_test, y_preds)
+tree['title'] = "Pool_3_grid_DT"
+
+if tree not in list_of_best_DT:
+    list_of_best_DT.append(tree)
+```
+
+### Compare Metrics of Decision Trees
+
+
+```python
+graph_metrics_comparison(list_of_dict=list_of_best_DT, title_of_graph="Decision Trees Comparisons")
+```
+
+
+<div>
+
+
+            <div id="1bd554da-265d-45b0-86b7-9d9a69e0e6aa" class="plotly-graph-div" style="height:525px; width:100%;"></div>
+            <script type="text/javascript">
+                require(["plotly"], function(Plotly) {
+                    window.PLOTLYENV=window.PLOTLYENV || {};
+
+                if (document.getElementById("1bd554da-265d-45b0-86b7-9d9a69e0e6aa")) {
+                    Plotly.newPlot(
+                        '1bd554da-265d-45b0-86b7-9d9a69e0e6aa',
+                        [{"name": "Baseline_DT", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8177244808423516, 0.18227551915764845, 0.6200926603267496, 0.6134510541805374, 0.6091017964071856, 0.6314874596473802]}, {"name": "max_features_DT", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8198303597543142, 0.18016964024568588, 0.6262135922330097, 0.6178456822644762, 0.6123902207453121, 0.6406754407747703]}, {"name": "max_depth_DT", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8589646095349518, 0.14103539046504826, 0.668682149237323, 0.7144535150055794, 0.7486153846153846, 0.6041718400794637]}, {"name": "max_feat12_depth_DT", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8590231061713951, 0.14097689382860484, 0.6722871906445472, 0.7130083645803289, 0.7430117222723174, 0.6138564688353613]}, {"name": "max_feat9_depth_DT", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8573852003509799, 0.14261479964902019, 0.6869542886492039, 0.7013266215720204, 0.7112470087742622, 0.6642662031288801]}, {"name": "Pool_1_DT", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8398362094179584, 0.16016379058204153, 0.6400210360241915, 0.6634683530502099, 0.6800782341436156, 0.6044201638937174]}, {"name": "Pool_1_grid_DT", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8463293360631764, 0.15367066393682363, 0.653384351497559, 0.6789141760350974, 0.6970720720720721, 0.6148497640923765]}, {"name": "Pool_2_grid_DT", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8430535244223457, 0.1569464755776543, 0.6490516677567038, 0.670576787934483, 0.685737976782753, 0.6160913831636454]}, {"name": "Pool_3_grid_DT", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8427610412401287, 0.15723895875987132, 0.6528028933092225, 0.6689786625721396, 0.6802153432032302, 0.6275142786193196]}],
+                        {"template": {"data": {"bar": [{"error_x": {"color": "#2a3f5f"}, "error_y": {"color": "#2a3f5f"}, "marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "bar"}], "barpolar": [{"marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "barpolar"}], "carpet": [{"aaxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "baxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "type": "carpet"}], "choropleth": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "choropleth"}], "contour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "contour"}], "contourcarpet": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "contourcarpet"}], "heatmap": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "heatmap"}], "heatmapgl": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "heatmapgl"}], "histogram": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "histogram"}], "histogram2d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "histogram2d"}], "histogram2dcontour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "histogram2dcontour"}], "mesh3d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "mesh3d"}], "parcoords": [{"line": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "parcoords"}], "pie": [{"automargin": true, "type": "pie"}], "scatter": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter"}], "scatter3d": [{"line": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter3d"}], "scattercarpet": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattercarpet"}], "scattergeo": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergeo"}], "scattergl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergl"}], "scattermapbox": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattermapbox"}], "scatterpolar": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolar"}], "scatterpolargl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolargl"}], "scatterternary": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterternary"}], "surface": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "surface"}], "table": [{"cells": {"fill": {"color": "#EBF0F8"}, "line": {"color": "white"}}, "header": {"fill": {"color": "#C8D4E3"}, "line": {"color": "white"}}, "type": "table"}]}, "layout": {"annotationdefaults": {"arrowcolor": "#2a3f5f", "arrowhead": 0, "arrowwidth": 1}, "coloraxis": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "colorscale": {"diverging": [[0, "#8e0152"], [0.1, "#c51b7d"], [0.2, "#de77ae"], [0.3, "#f1b6da"], [0.4, "#fde0ef"], [0.5, "#f7f7f7"], [0.6, "#e6f5d0"], [0.7, "#b8e186"], [0.8, "#7fbc41"], [0.9, "#4d9221"], [1, "#276419"]], "sequential": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "sequentialminus": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]]}, "colorway": ["#636efa", "#EF553B", "#00cc96", "#ab63fa", "#FFA15A", "#19d3f3", "#FF6692", "#B6E880", "#FF97FF", "#FECB52"], "font": {"color": "#2a3f5f"}, "geo": {"bgcolor": "white", "lakecolor": "white", "landcolor": "#E5ECF6", "showlakes": true, "showland": true, "subunitcolor": "white"}, "hoverlabel": {"align": "left"}, "hovermode": "closest", "mapbox": {"style": "light"}, "paper_bgcolor": "white", "plot_bgcolor": "#E5ECF6", "polar": {"angularaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "radialaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "scene": {"xaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "yaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "zaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}}, "shapedefaults": {"line": {"color": "#2a3f5f"}}, "ternary": {"aaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "baxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "caxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "title": {"x": 0.05}, "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "title": {"standoff": 15}, "zerolinecolor": "white", "zerolinewidth": 2}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "title": {"standoff": 15}, "zerolinecolor": "white", "zerolinewidth": 2}}}, "title": {"text": "Decision Trees Comparisons"}},
+                        {"responsive": true}
+                    ).then(function(){
+
+var gd = document.getElementById('1bd554da-265d-45b0-86b7-9d9a69e0e6aa');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })
+                };
+                });
+            </script>
+        </div>
 
 
 ## SVM Machines
@@ -1757,18 +2364,17 @@ y_preds = clf.predict(scaled_data_test)
 
 ```python
 svm_metrics = calc_metrics(labels=y_test, preds=y_preds)
-svm_metrics['title'] = 'Baseline SVM'
+svm_metrics['title'] = 'Baseline_SVM'
 list_of_svm.append(svm_metrics)
 ```
 
 ### Running SVM using GridSearchCV to find the optimum conditions for our SVM
 
-**NOTE:**
-The following line of code, may take somewhere between 1 - 3 hrs to run
-The best result from the code below were seen with the combinations below
+The following section of code blocks, may take a decent amount of time to run. The different parameters were split into different pools to minimize the runtime of the section, so as to find the best combinations within their respective groups.  GridSearch was also applied to each of the 3 pools to get the best ones from among them to compare later on.
 
-* [CV]  C=1000, gamma=0.01, kernel=rbf, score=0.8458849097609373, total= 2.3min
-* [CV]  C=100, gamma=0.01, kernel=rbf, score=0.8453978453978453, total=  30.3s
+The scoring used to evaluate the best models is **F1.**
+
+_Pool_1_ Grid Search Results
 
 
 ```python
@@ -1778,7 +2384,7 @@ param_grid = {'C': [0.0001, 0.001, 0.01],
               'gamma': [1, 0.1, 0.01], 
               'kernel': ['rbf']}  
   
-grid = GridSearchCV(SVC(), param_grid, refit = True, verbose = 3, scoring='f1', n_jobs=-1)
+grid = GridSearchCV(SVC(), param_grid, refit=True, verbose = 3, scoring='f1', cv=10, n_jobs=-1)
   
 # fitting the model for grid search 
 grid.fit(scaled_data_train, y_train)
@@ -1792,6 +2398,8 @@ print(grid.best_params_)
 # print how our model looks after hyper-parameter tuning 
 print(grid.best_estimator_)
 ```
+
+_Pool_2_ Grid Search Results
 
 
 ```python
@@ -1815,6 +2423,8 @@ print(grid.best_params_)
 print(grid.best_estimator_)
 ```
 
+_Pool_3_ GridSearch Results
+
 
 ```python
 # defining parameter range 
@@ -1837,7 +2447,7 @@ print(grid.best_params_)
 print(grid.best_estimator_)
 ```
 
-#### Comparing SVM Models from the different pools created
+#### Comparing best SVM Models from the different pools created
 
 
 ```python
@@ -1850,7 +2460,7 @@ clf_1.fit(scaled_data_train, y_train)
 y_preds = clf_1.predict(scaled_data_test)
 
 svm_metrics = calc_metrics(labels=y_test, preds=y_preds)
-svm_metrics['title'] = 'Pool_1'
+svm_metrics['title'] = 'Pool_1_SVM'
 list_of_svm.append(svm_metrics)
 
 svm_metrics
@@ -1865,7 +2475,7 @@ svm_metrics
      'f1': 0.43401335981224043,
      'f_b': 0.5965260545905707,
      'error': 0.18338695525007312,
-     'title': 'Pool_1'}
+     'title': 'Pool_1_SVM'}
 
 
 
@@ -1879,7 +2489,7 @@ clf_2.fit(scaled_data_train, y_train)
 y_preds = clf_2.predict(scaled_data_test)
 
 svm_metrics = calc_metrics(labels=y_test, preds=y_preds)
-svm_metrics['title'] = 'Pool_2'
+svm_metrics['title'] = 'Pool_2_SVM'
 list_of_svm.append(svm_metrics)
 
 svm_metrics
@@ -1894,7 +2504,7 @@ svm_metrics
      'f1': 0.6508842779557165,
      'f_b': 0.7020969777083459,
      'error': 0.1466510675636151,
-     'title': 'Pool_2'}
+     'title': 'Pool_2_SVM'}
 
 
 
@@ -1909,7 +2519,7 @@ clf_3.fit(scaled_data_train, y_train)
 y_preds = clf_3.predict(scaled_data_test)
 
 svm_metrics = calc_metrics(labels=y_test, preds=y_preds)
-svm_metrics['title'] = 'Pool_3'
+svm_metrics['title'] = 'Pool_3_SVM'
 list_of_svm.append(svm_metrics)
 
 svm_metrics
@@ -1924,7 +2534,7 @@ svm_metrics
      'f1': 0.6532394366197184,
      'f_b': 0.7105214780317421,
      'error': 0.1440187189236619,
-     'title': 'Pool_3'}
+     'title': 'Pool_3_SVM'}
 
 
 
@@ -1933,126 +2543,27 @@ svm_metrics
 
 
 ```python
-svm_df = pd.DataFrame([svm for svm in list_of_svm])
-svm_df.set_index(keys='title', inplace=True)
-svm_df
-```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>accuracy</th>
-      <th>error</th>
-      <th>f1</th>
-      <th>f_b</th>
-      <th>precision</th>
-      <th>recall</th>
-    </tr>
-    <tr>
-      <th>title</th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Baseline SVM</th>
-      <td>0.856742</td>
-      <td>0.143258</td>
-      <td>0.649893</td>
-      <td>0.714825</td>
-      <td>0.765836</td>
-      <td>0.564440</td>
-    </tr>
-    <tr>
-      <th>Pool_1</th>
-      <td>0.816613</td>
-      <td>0.183387</td>
-      <td>0.434013</td>
-      <td>0.596526</td>
-      <td>0.794974</td>
-      <td>0.298485</td>
-    </tr>
-    <tr>
-      <th>Pool_2</th>
-      <td>0.853349</td>
-      <td>0.146651</td>
-      <td>0.650884</td>
-      <td>0.702097</td>
-      <td>0.740964</td>
-      <td>0.580333</td>
-    </tr>
-    <tr>
-      <th>Pool_3</th>
-      <td>0.855981</td>
-      <td>0.144019</td>
-      <td>0.653239</td>
-      <td>0.710521</td>
-      <td>0.754637</td>
-      <td>0.575863</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
-
-
-```python
-x = list(svm_df.columns)
-names = list(svm_df.index)
-
-fig = go.Figure()
-
-for name in names:
-    fig.add_trace(go.Bar(x=x, 
-                         y=svm_df[svm_df.index==name].values.reshape(-1), 
-                         name=name)
-                 )
-fig.update_layout(title_text='SVM Metric Comparisons')
-fig.show()
+graph_metrics_comparison(list_of_svm,title_of_graph='SVM Metric Comparison')
 ```
 
 
 <div>
 
 
-            <div id="ff10163d-125d-414d-a917-2f6e13c81ff4" class="plotly-graph-div" style="height:525px; width:100%;"></div>
+            <div id="e56ebb05-8fbb-469f-859d-5435b32901cb" class="plotly-graph-div" style="height:525px; width:100%;"></div>
             <script type="text/javascript">
                 require(["plotly"], function(Plotly) {
                     window.PLOTLYENV=window.PLOTLYENV || {};
 
-                if (document.getElementById("ff10163d-125d-414d-a917-2f6e13c81ff4")) {
+                if (document.getElementById("e56ebb05-8fbb-469f-859d-5435b32901cb")) {
                     Plotly.newPlot(
-                        'ff10163d-125d-414d-a917-2f6e13c81ff4',
-                        [{"name": "Baseline SVM", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8567417373501024, 0.14325826264989763, 0.6498927805575411, 0.7148248317504245, 0.7658355795148248, 0.5644400297988577]}, {"name": "Pool_1", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8166130447499269, 0.18338695525007312, 0.43401335981224043, 0.5965260545905707, 0.794973544973545, 0.2984852247330519]}, {"name": "Pool_2", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8533489324363849, 0.1466510675636151, 0.6508842779557165, 0.7020969777083459, 0.7409638554216867, 0.5803327539111001]}, {"name": "Pool_3", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8559812810763381, 0.1440187189236619, 0.6532394366197184, 0.7105214780317421, 0.7546371623820372, 0.5758629252545319]}],
-                        {"template": {"data": {"bar": [{"error_x": {"color": "#2a3f5f"}, "error_y": {"color": "#2a3f5f"}, "marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "bar"}], "barpolar": [{"marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "barpolar"}], "carpet": [{"aaxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "baxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "type": "carpet"}], "choropleth": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "choropleth"}], "contour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "contour"}], "contourcarpet": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "contourcarpet"}], "heatmap": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "heatmap"}], "heatmapgl": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "heatmapgl"}], "histogram": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "histogram"}], "histogram2d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "histogram2d"}], "histogram2dcontour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "histogram2dcontour"}], "mesh3d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "mesh3d"}], "parcoords": [{"line": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "parcoords"}], "pie": [{"automargin": true, "type": "pie"}], "scatter": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter"}], "scatter3d": [{"line": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter3d"}], "scattercarpet": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattercarpet"}], "scattergeo": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergeo"}], "scattergl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergl"}], "scattermapbox": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattermapbox"}], "scatterpolar": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolar"}], "scatterpolargl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolargl"}], "scatterternary": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterternary"}], "surface": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "surface"}], "table": [{"cells": {"fill": {"color": "#EBF0F8"}, "line": {"color": "white"}}, "header": {"fill": {"color": "#C8D4E3"}, "line": {"color": "white"}}, "type": "table"}]}, "layout": {"annotationdefaults": {"arrowcolor": "#2a3f5f", "arrowhead": 0, "arrowwidth": 1}, "coloraxis": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "colorscale": {"diverging": [[0, "#8e0152"], [0.1, "#c51b7d"], [0.2, "#de77ae"], [0.3, "#f1b6da"], [0.4, "#fde0ef"], [0.5, "#f7f7f7"], [0.6, "#e6f5d0"], [0.7, "#b8e186"], [0.8, "#7fbc41"], [0.9, "#4d9221"], [1, "#276419"]], "sequential": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "sequentialminus": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]]}, "colorway": ["#636efa", "#EF553B", "#00cc96", "#ab63fa", "#FFA15A", "#19d3f3", "#FF6692", "#B6E880", "#FF97FF", "#FECB52"], "font": {"color": "#2a3f5f"}, "geo": {"bgcolor": "white", "lakecolor": "white", "landcolor": "#E5ECF6", "showlakes": true, "showland": true, "subunitcolor": "white"}, "hoverlabel": {"align": "left"}, "hovermode": "closest", "mapbox": {"style": "light"}, "paper_bgcolor": "white", "plot_bgcolor": "#E5ECF6", "polar": {"angularaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "radialaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "scene": {"xaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "yaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "zaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}}, "shapedefaults": {"line": {"color": "#2a3f5f"}}, "ternary": {"aaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "baxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "caxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "title": {"x": 0.05}, "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "title": {"standoff": 15}, "zerolinecolor": "white", "zerolinewidth": 2}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "title": {"standoff": 15}, "zerolinecolor": "white", "zerolinewidth": 2}}}, "title": {"text": "SVM Metric Comparisons"}},
+                        'e56ebb05-8fbb-469f-859d-5435b32901cb',
+                        [{"name": "Baseline", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8567417373501024, 0.14325826264989763, 0.6498927805575411, 0.7148248317504245, 0.7658355795148248, 0.5644400297988577]}, {"name": "Pool_1_SVM", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8166130447499269, 0.18338695525007312, 0.43401335981224043, 0.5965260545905707, 0.794973544973545, 0.2984852247330519]}, {"name": "Pool_2_SVM", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8533489324363849, 0.1466510675636151, 0.6508842779557165, 0.7020969777083459, 0.7409638554216867, 0.5803327539111001]}, {"name": "Pool_3_SVM", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8559812810763381, 0.1440187189236619, 0.6532394366197184, 0.7105214780317421, 0.7546371623820372, 0.5758629252545319]}],
+                        {"template": {"data": {"bar": [{"error_x": {"color": "#2a3f5f"}, "error_y": {"color": "#2a3f5f"}, "marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "bar"}], "barpolar": [{"marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "barpolar"}], "carpet": [{"aaxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "baxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "type": "carpet"}], "choropleth": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "choropleth"}], "contour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "contour"}], "contourcarpet": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "contourcarpet"}], "heatmap": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "heatmap"}], "heatmapgl": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "heatmapgl"}], "histogram": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "histogram"}], "histogram2d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "histogram2d"}], "histogram2dcontour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "histogram2dcontour"}], "mesh3d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "mesh3d"}], "parcoords": [{"line": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "parcoords"}], "pie": [{"automargin": true, "type": "pie"}], "scatter": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter"}], "scatter3d": [{"line": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter3d"}], "scattercarpet": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattercarpet"}], "scattergeo": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergeo"}], "scattergl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergl"}], "scattermapbox": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattermapbox"}], "scatterpolar": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolar"}], "scatterpolargl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolargl"}], "scatterternary": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterternary"}], "surface": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "surface"}], "table": [{"cells": {"fill": {"color": "#EBF0F8"}, "line": {"color": "white"}}, "header": {"fill": {"color": "#C8D4E3"}, "line": {"color": "white"}}, "type": "table"}]}, "layout": {"annotationdefaults": {"arrowcolor": "#2a3f5f", "arrowhead": 0, "arrowwidth": 1}, "coloraxis": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "colorscale": {"diverging": [[0, "#8e0152"], [0.1, "#c51b7d"], [0.2, "#de77ae"], [0.3, "#f1b6da"], [0.4, "#fde0ef"], [0.5, "#f7f7f7"], [0.6, "#e6f5d0"], [0.7, "#b8e186"], [0.8, "#7fbc41"], [0.9, "#4d9221"], [1, "#276419"]], "sequential": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "sequentialminus": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]]}, "colorway": ["#636efa", "#EF553B", "#00cc96", "#ab63fa", "#FFA15A", "#19d3f3", "#FF6692", "#B6E880", "#FF97FF", "#FECB52"], "font": {"color": "#2a3f5f"}, "geo": {"bgcolor": "white", "lakecolor": "white", "landcolor": "#E5ECF6", "showlakes": true, "showland": true, "subunitcolor": "white"}, "hoverlabel": {"align": "left"}, "hovermode": "closest", "mapbox": {"style": "light"}, "paper_bgcolor": "white", "plot_bgcolor": "#E5ECF6", "polar": {"angularaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "radialaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "scene": {"xaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "yaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "zaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}}, "shapedefaults": {"line": {"color": "#2a3f5f"}}, "ternary": {"aaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "baxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "caxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "title": {"x": 0.05}, "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "title": {"standoff": 15}, "zerolinecolor": "white", "zerolinewidth": 2}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "title": {"standoff": 15}, "zerolinecolor": "white", "zerolinewidth": 2}}}, "title": {"text": "SVM Metric Comparison"}},
                         {"responsive": true}
                     ).then(function(){
 
-var gd = document.getElementById('ff10163d-125d-414d-a917-2f6e13c81ff4');
+var gd = document.getElementById('e56ebb05-8fbb-469f-859d-5435b32901cb');
 var x = new MutationObserver(function (mutations, observer) {{
         var display = window.getComputedStyle(gd).display;
         if (!display || display === 'none') {{
@@ -2081,13 +2592,17 @@ if (outputEl) {{
         </div>
 
 
-![SVM_Metrics_Comparisons](./Classification_Notebook_files/SVM_Metrics_Comparisons.png "SVM_Metrics_Comparisons")
+![SVM_graph_metrics_comparisons](../Classification-Modeling/Classification_Notebook_files/SVM_Metrics_Comparisons.png)
 
-After looking further into our SVMs with GridSearhCV applied to find the best parameters to maximize the F1 scores, we see that our baselime model slightly edges out the competition from the different pools that we looked at.  The difference is very miniscule, that we would 
+After looking further into our SVMs with GridSearhCV applied to find the best parameters to maximize the F1 scores, we see that our baselime model slightly edges out the competition from the different pools that we looked at.  The difference is very small within the SVMs that were determined to be the best.  
+
+It was intereseting to see that the higher penalties within _Pool_1_ resulted in overall scores that were noticeable lower than the counterparts, however this group did produce the model with the best precision score of the SVMs.
 
 # Summary
 
-In this project, we sought to create a classification model using K-Nearest Neighbors and Decision Trees.  The packages used to implement these models was `sklearn`.
+In this project, we sought to create a classification model using K-Nearest Neighbors, Decision Trees, and Support Vector Machines(SVMs) with the aid of Python's `sklearn` package.  The dataset and description of the features can be found at the following link: [Adult Dataset](https://www.openml.org/d/1590).
+
+The models used and selected were tuned to the metric F1.
 
 ### KNN
 
@@ -2099,36 +2614,78 @@ The best overall results within our Decision Tree Modeling utilized the followin
 
 We used an iterative process to find the best combination of these hyper parameters that would give us an optimum decision tree. Although there are many combinations of hyper parameters that could be used, we decided to only use max_depth and max_features, to simplify the project.
 
-Below are the overall scores of the decision
-
-
-```python
-feat_depth_metrics[10]
-```
-
-
-
-
-    {'precision': 0.7750961874781392,
-     'recall': 0.5502855723863919,
-     'accuracy': 0.8564492541678853,
-     'f1': 0.6436247458611677,
-     'f_b': 0.7165491819181272,
-     'error': 0.14355074583211466}
-
-
-
 ### Support Vector Machine
 
-In the support vector machine, several things had to be considered when setting up this model. 
-The
+In the support vector machine, the decision was made to use GridSearchCV to find the best models. Upon initally creating the grid search, the code to find the best model took between 1-3 hours to complete.  That initial code was broken into 3 different pools and some of the hyper parameters used were reduced to reduce runtim eand find the most effective model, once the non-effective hyper parameters were removed.
+
+After tunning, the resulting models were very close, with the exception of that which came out of _Pool_1._
+This pool had the highest penalties applied during the GridSearch process.  The models that had lower penalties tend to out perform those with the higher ones. 
 
 ### Conclusion
 
-The Decision Tree that resulted from our hyper parameter tunning that gave the overall best performance and the most consistent results.  Our KNN Model has some very interesting results and unexpected results that were influenced by the scaling of the data. We were able to accurately predict a little over 86% of the data accurately, using Decision Trees, withouth losing much with the other metrics used.
+The Decision Tree that resulted from our hyper parameter tunning that gave the overall best performance and the most consistent results.  Our KNN Model has some very interesting results and unexpected results that were influenced by the scaling of the data. We were able to accurately predict a little over 85.7% of the data accurately, using Decision Trees, withouth losing much with the other metrics used.
+
+Although this seems like a good statistic, the drawback of using Decision Trees may not make it a strong option for comparing data that has few patters.
+
+
+```python
+best_models_comparison = []
+best_models_comparison.append(find_best_score(list_of_dict=list_of_best_KNN))
+best_models_comparison.append(find_best_score(list_of_dict=list_of_best_DT))
+best_models_comparison.append(find_best_score(list_of_dict=list_of_svm))
+
+graph_metrics_comparison(best_models_comparison, ['k'], title_of_graph='Comparison of best MLE models')
+```
+
+
+<div>
+
+
+            <div id="ba3fe5d0-f812-4b5c-8720-166a726f267a" class="plotly-graph-div" style="height:525px; width:100%;"></div>
+            <script type="text/javascript">
+                require(["plotly"], function(Plotly) {
+                    window.PLOTLYENV=window.PLOTLYENV || {};
+
+                if (document.getElementById("ba3fe5d0-f812-4b5c-8720-166a726f267a")) {
+                    Plotly.newPlot(
+                        'ba3fe5d0-f812-4b5c-8720-166a726f267a',
+                        [{"name": "Best_grid_KNN", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8458613629716292, 0.15413863702837086, 0.6446392447741065, 0.6797883838671143, 0.70543093270366, 0.5934939160665508]}, {"name": "max_feat9_depth_DT", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8573852003509799, 0.14261479964902019, 0.6869542886492039, 0.7013266215720204, 0.7112470087742622, 0.6642662031288801]}, {"name": "Pool_3_SVM", "type": "bar", "x": ["accuracy", "error", "f1", "f_b", "precision", "recall"], "y": [0.8559812810763381, 0.1440187189236619, 0.6532394366197184, 0.7105214780317421, 0.7546371623820372, 0.5758629252545319]}],
+                        {"template": {"data": {"bar": [{"error_x": {"color": "#2a3f5f"}, "error_y": {"color": "#2a3f5f"}, "marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "bar"}], "barpolar": [{"marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "barpolar"}], "carpet": [{"aaxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "baxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "type": "carpet"}], "choropleth": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "choropleth"}], "contour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "contour"}], "contourcarpet": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "contourcarpet"}], "heatmap": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "heatmap"}], "heatmapgl": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "heatmapgl"}], "histogram": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "histogram"}], "histogram2d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "histogram2d"}], "histogram2dcontour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "histogram2dcontour"}], "mesh3d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "mesh3d"}], "parcoords": [{"line": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "parcoords"}], "pie": [{"automargin": true, "type": "pie"}], "scatter": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter"}], "scatter3d": [{"line": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter3d"}], "scattercarpet": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattercarpet"}], "scattergeo": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergeo"}], "scattergl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergl"}], "scattermapbox": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattermapbox"}], "scatterpolar": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolar"}], "scatterpolargl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolargl"}], "scatterternary": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterternary"}], "surface": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "type": "surface"}], "table": [{"cells": {"fill": {"color": "#EBF0F8"}, "line": {"color": "white"}}, "header": {"fill": {"color": "#C8D4E3"}, "line": {"color": "white"}}, "type": "table"}]}, "layout": {"annotationdefaults": {"arrowcolor": "#2a3f5f", "arrowhead": 0, "arrowwidth": 1}, "coloraxis": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "colorscale": {"diverging": [[0, "#8e0152"], [0.1, "#c51b7d"], [0.2, "#de77ae"], [0.3, "#f1b6da"], [0.4, "#fde0ef"], [0.5, "#f7f7f7"], [0.6, "#e6f5d0"], [0.7, "#b8e186"], [0.8, "#7fbc41"], [0.9, "#4d9221"], [1, "#276419"]], "sequential": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]], "sequentialminus": [[0.0, "#0d0887"], [0.1111111111111111, "#46039f"], [0.2222222222222222, "#7201a8"], [0.3333333333333333, "#9c179e"], [0.4444444444444444, "#bd3786"], [0.5555555555555556, "#d8576b"], [0.6666666666666666, "#ed7953"], [0.7777777777777778, "#fb9f3a"], [0.8888888888888888, "#fdca26"], [1.0, "#f0f921"]]}, "colorway": ["#636efa", "#EF553B", "#00cc96", "#ab63fa", "#FFA15A", "#19d3f3", "#FF6692", "#B6E880", "#FF97FF", "#FECB52"], "font": {"color": "#2a3f5f"}, "geo": {"bgcolor": "white", "lakecolor": "white", "landcolor": "#E5ECF6", "showlakes": true, "showland": true, "subunitcolor": "white"}, "hoverlabel": {"align": "left"}, "hovermode": "closest", "mapbox": {"style": "light"}, "paper_bgcolor": "white", "plot_bgcolor": "#E5ECF6", "polar": {"angularaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "radialaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "scene": {"xaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "yaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "zaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}}, "shapedefaults": {"line": {"color": "#2a3f5f"}}, "ternary": {"aaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "baxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "caxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "title": {"x": 0.05}, "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "title": {"standoff": 15}, "zerolinecolor": "white", "zerolinewidth": 2}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "title": {"standoff": 15}, "zerolinecolor": "white", "zerolinewidth": 2}}}, "title": {"text": "Comparison of best MLE models"}},
+                        {"responsive": true}
+                    ).then(function(){
+
+var gd = document.getElementById('ba3fe5d0-f812-4b5c-8720-166a726f267a');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })
+                };
+                });
+            </script>
+        </div>
+
 
 ## Future Works
 
 Possible future addition, or editions, to this project include the following:
 * Pulling more recent data to see how demographics have increased over the years
 * Web scrapping with the census bureau website to automatically update the data used.
+* Using random forests instead of Decision Trees
