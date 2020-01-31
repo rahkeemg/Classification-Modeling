@@ -1542,6 +1542,8 @@ if (outputEl) {{
         </div>
 
 
+![Best KNN Comparisons](../Classification-Modeling/Classification_Notebook_files/Best_KNN_Comparisons.png)
+
 ## Decision Tree Modeling
 
 In this section, we will setup a base decision tree and also attempt to increase the performance of the tree via the following hyper parametres: `max_depth` and `max_features`
@@ -1610,27 +1612,27 @@ graph_dt_metrics(max_feat_metrics, fsize=(13,5), title='Max_Features', x_label='
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_76_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_77_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_76_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_77_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_76_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_77_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_76_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_77_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_76_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_77_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_76_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_77_5.png)
 
 
 
@@ -1698,27 +1700,27 @@ graph_dt_metrics(max_depth_metrics, fsize=(15,5), title='Decision Tree', x_label
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_81_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_82_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_81_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_82_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_81_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_82_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_81_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_82_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_81_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_82_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_81_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_82_5.png)
 
 
 
@@ -1798,27 +1800,27 @@ graph_dt_metrics(feat_depth_metrics, title="Max_feat: 12", x_label='max_depth', 
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_86_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_87_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_86_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_87_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_86_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_87_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_86_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_87_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_86_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_87_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_86_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_87_5.png)
 
 
 
@@ -1906,27 +1908,27 @@ graph_dt_metrics(feat_depth_metrics, title="Max_feat: 9", x_label='max_depth', f
 ```
 
 
-![png](Classification_Notebook_files/Classification_Notebook_91_0.png)
+![png](Classification_Notebook_files/Classification_Notebook_92_0.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_91_1.png)
+![png](Classification_Notebook_files/Classification_Notebook_92_1.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_91_2.png)
+![png](Classification_Notebook_files/Classification_Notebook_92_2.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_91_3.png)
+![png](Classification_Notebook_files/Classification_Notebook_92_3.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_91_4.png)
+![png](Classification_Notebook_files/Classification_Notebook_92_4.png)
 
 
 
-![png](Classification_Notebook_files/Classification_Notebook_91_5.png)
+![png](Classification_Notebook_files/Classification_Notebook_92_5.png)
 
 
 
@@ -2336,6 +2338,8 @@ if (outputEl) {{
         </div>
 
 
+![Decision_Trees_Comparisons](../Classification-Modeling/Classification_Notebook_files/Decision_Trees_Comparisons.png)
+
 ## SVM Machines
 
 Here, we are using SVM machines to generate another model, to see if it can potentially outperform our Decision Tree and KNN.  
@@ -2682,6 +2686,8 @@ if (outputEl) {{
             </script>
         </div>
 
+
+![Comparison of MLE Models](../Classification-Modeling/Classification_Notebook_files/Comparison_of_MLE_Models.png)
 
 ## Future Works
 
