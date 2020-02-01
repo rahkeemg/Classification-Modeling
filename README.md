@@ -1441,7 +1441,7 @@ if (outputEl) {{
         </div>
 
 
-![Best KNN Comparisons](../Classification-Modeling/Classification_Notebook_files/Best_KNN_Comparisons.png)
+![Best_KNN_Comparisons.png](../Classification-Modeling/Classification_Notebook_files/Best_KNN_Comparisons.png)
 
 ## Decision Tree Modeling
 
