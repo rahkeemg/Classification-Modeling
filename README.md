@@ -1,16 +1,21 @@
 # Classification Modeling 
 
 # Abstract
+<details> 
 
-In this project, we will explore classification modeling using K-nearest neighbors (KNN) and Decision Trees.  We will also be using the dataset below to see how we can build and tune our models for optimal performance.
-
+In this project, we will explore classification modeling using K-nearest neighbors (KNN), Decision Trees, and Support Vector Machines.  We will also be using GridSearchCV to find the best comibination of parameters to generate an optimum model amongst these types of models.
+  
 
 ### Dataset
 
-In this project, we will build a classification model using K-Nearest Neighbors(KNN) and Decision Trees, utilizing the following dataset:  https://www.openml.org/d/1590
-The information from the dataset was originally derived from the Census Bureau surveys in 1996.  
+The dataset used can be found at the website below<br> 
+https://www.openml.org/d/1590
+
+The information within was originally derived from the Census Bureau surveys of 1996.  
 
 For more information on the features available within the dataset, refer to the link above.
+
+</details>
 
 ### Import files
 
