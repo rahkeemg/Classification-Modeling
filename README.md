@@ -51,6 +51,7 @@ data = pd.read_csv('./data/phpMawTba.csv')
 ```
 
 ## Data Cleaning
+<details>
 
 Since this file was initally mined by someone else, it was relatively clean and ordered.
 There were some additional operations needed to put the data in the proper format and to type cast certain columns.
@@ -703,10 +704,10 @@ data.head()
 </table>
 </div>
 
-
+</details>
 
 ### Visualization 
-
+<details>
 
 ```python
 sns.catplot(x='class', kind='count', data=data, aspect=2.5)
@@ -783,6 +784,7 @@ plt.show()
 
 ![png](Classification_Notebook_files/Classification_Notebook_20_0.png)
 
+</details>
 
 # Classification modeling
 
