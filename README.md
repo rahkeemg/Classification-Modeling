@@ -17,8 +17,9 @@ For more information on the features available within the dataset, refer to the 
 
 </details>
 
+# Data Cleaning
 ### Import files
-
+<details>
 
 ```python
 import numpy as np
@@ -45,17 +46,12 @@ from pydotplus import graph_from_dot_data
 %autoreload
 ```
 
+Since this file was initally mined by someone else, it was relatively clean and ordered.
+There were some additional operations needed to put the data in the proper format and to type cast certain columns.
 
 ```python
 data = pd.read_csv('./data/phpMawTba.csv')
 ```
-
-## Data Cleaning
-<details>
-
-Since this file was initally mined by someone else, it was relatively clean and ordered.
-There were some additional operations needed to put the data in the proper format and to type cast certain columns.
-
 
 ```python
 data.head()
@@ -793,6 +789,7 @@ In this section, we will create classification models using K-nearest neighbors 
 
 ### Setting up the data for modeling
 
+<details>
 
 ```python
 def encode_cat_labels(df, cols=None):
@@ -983,8 +980,11 @@ except:
     print(model_df.columns)
 ```
 
+</details>
+
 ### Train Test Split
 
+<details>
 
 ```python
 ##Setting up the train_test split
@@ -1156,8 +1156,11 @@ plt.show()
 
 Now that the data transformation is complete, the next step is to generate the learning models and see how the scaling affects the models.
 
+</details>
+
 ## K-nearest neighbors modeling
 
+<details>
 
 ```python
 def generate_knn(X_train, y_train, X_test, y_test, min_k=1, max_k=25):
@@ -1209,6 +1212,7 @@ list_of_best_KNN = []
 
 #### Baseline model without feature scaling
 
+<details>
 There is an upward and downward trend in our graphs. This is the result of low correlation in our untransformed, train-test split
 
 
@@ -1276,8 +1280,11 @@ best_KNN_f1['title'] = "Baseline_no_scaling_KNN"
 
 list_of_best_KNN.append(best_KNN_f1)
 ```
+</details>
 
 #### Model with feature scaling
+
+<details>
 
 By introducing feature scaling, the results of our KNN model has had an overall increase in the different metrics used.
 It was interesting to see that the precision of the model began to plateau as a result of the introduction of scaling our training data and the results of the model are more consistent now.  
@@ -1325,8 +1332,11 @@ best_KNN_f1['title'] = "KNN_scaled"
 list_of_best_KNN.append(best_KNN_f1)
 ```
 
+</details>
+
 #### KNN with Grid SearchCV using scaled data
 
+<details>
 
 ```python
 param_grid = {
@@ -1370,8 +1380,11 @@ best_KNN_grid['k'] = clf.n_neighbors
 list_of_best_KNN.append(best_KNN_grid)
 ```
 
+</details>
+
 ### Comparison of KNN Metrics
 
+<details>
 
 ```python
 def graph_metrics_comparison(list_of_dict=None, exclusion_list=None, title_of_graph=''):
@@ -1403,7 +1416,13 @@ graph_metrics_comparison(list_of_dict=list_of_best_KNN, exclusion_list=['k'], ti
 ```
 ![png](Classification_Notebook_files/Best_KNN_Comparisons.png)
 
+</details>
+
+</details>
+
 ## Decision Tree Modeling
+
+<details>
 
 In this section, we will setup a base decision tree and also attempt to increase the performance of the tree via the following hyper parametres: `max_depth` and `max_features`
 
@@ -1428,6 +1447,7 @@ list_of_best_DT.append(best_DT_metrics)
 
 ### Decision Tree with hyper parameter tunning: `max_features` 
 
+<details>
 
 ```python
 def graph_dt_metrics(list_of_metrics, fsize=(15,8), title='', x_label=''):
@@ -1502,8 +1522,11 @@ best_max_feat_DT['title'] = 'max_features_DT'
 list_of_best_DT.append(best_max_feat_DT)
 ```
 
+</details>
+
 ### Decision Tree hyper parameter tunning: `max_depth`
 
+<details>
 
 ```python
 max_depth_metrics = []
@@ -1558,9 +1581,11 @@ best_max_depth_DT['title'] = 'max_depth_DT'
 list_of_best_DT.append(best_max_depth_DT)
 ```
 
+</details>
+
 ### Decision tree hyper parameter tunning: `max_features: 12` & `max_depth`
 
-
+<details>
 
 ```python
 feat_depth_metrics = []
@@ -1615,8 +1640,11 @@ best_max_depth_feat_DT['title'] = 'max_feat12_depth_DT'
 list_of_best_DT.append(best_max_depth_feat_DT)
 ```
 
+</details>
+
 ### Decision Tree Tuning using max_features: 9 & max_depth
 
+<details>
 
 ```python
 feat_depth_metrics = []
@@ -1665,10 +1693,15 @@ best_max_depth_feat_DT['title'] = 'max_feat9_depth_DT'
 list_of_best_DT.append(best_max_depth_feat_DT)
 ```
 
+</details>
+
 ### Decision Tree with GridSearchCV
+
+<details>
 
 _Pool_1_DT_
 
+<details>
 
 ```python
 param_grid = {
@@ -1707,8 +1740,11 @@ tree['title'] = "Pool_1_grid_DT"
 list_of_best_DT.append(tree)
 ```
 
+</details>
+
 _Pool_2_DT_
 
+<details>
 
 ```python
 param_grid = {
@@ -1746,8 +1782,11 @@ tree['title'] = "Pool_2_grid_DT"
 list_of_best_DT.append(tree)
 ```
 
+</details>
+
 _Pool_3_DT_
 
+<details>
 
 ```python
 param_grid = {
@@ -1787,15 +1826,27 @@ tree['title'] = "Pool_3_grid_DT"
 list_of_best_DT.append(tree)
 ```
 
+</details>
+
+</details>
+
 ### Compare Metrics of Decision Trees
 
+<details>
 
 ```python
 graph_metrics_comparison(list_of_dict=list_of_best_DT, title_of_graph="Decision Trees Comparisons")
 ```
 
 ![Decision_Trees_Comparisons](Classification_Notebook_files/Decision_Trees_Comparisons.png)
+
+</details>
+
+</details>
+
 ## SVM Machines
+
+<details>
 
 Here, we are using SVM machines to generate another model, to see if it can potentially outperform our Decision Tree and KNN.  
 This was added for fun and as a means to further practice modeling with `sklearn`.
@@ -1835,6 +1886,7 @@ The scoring used to evaluate the best models is **F1.**
 
 _Pool_1_ Grid Search Results
 
+<details>
 
 ```python
 ## Running CSV with higher penalies
@@ -1858,8 +1910,11 @@ print(grid.best_params_)
 print(grid.best_estimator_)
 ```
 
+</details>
+
 _Pool_2_ Grid Search Results
 
+<details>
 
 ```python
 # defining parameter range 
@@ -1882,8 +1937,11 @@ print(grid.best_params_)
 print(grid.best_estimator_)
 ```
 
+</details>
+
 _Pool_3_ GridSearch Results
 
+<details>
 
 ```python
 # defining parameter range 
@@ -1906,8 +1964,11 @@ print(grid.best_params_)
 print(grid.best_estimator_)
 ```
 
+</details>
+
 #### Comparing best SVM Models from the different pools created
 
+<details>
 
 ```python
 clf_1 = SVC(C=0.01, break_ties=False, cache_size=200, class_weight=None, coef0=0.0,
@@ -1995,11 +2056,11 @@ svm_metrics
      'error': 0.1440187189236619,
      'title': 'Pool_3_SVM'}
 
-
+</details>
 
 ### Graphing SVM Metrics
 
-
+<details>
 
 ```python
 graph_metrics_comparison(list_of_svm,title_of_graph='SVM Metric Comparison')
@@ -2010,6 +2071,10 @@ After looking further into our SVMs with GridSearhCV applied to find the best pa
 
 It was intereseting to see that the higher penalties within _Pool_1_ resulted in overall scores that were noticeable lower than the counterparts, however this group did produce the model with the best precision score of the SVMs.
 
+</details>
+
+</details>
+
 # Summary
 
 In this project, we sought to create a classification model using K-Nearest Neighbors, Decision Trees, and Support Vector Machines(SVMs) with the aid of Python's `sklearn` package.  The dataset and description of the features can be found at the following link: [Adult Dataset](https://www.openml.org/d/1590).
@@ -2018,26 +2083,25 @@ The models used and selected were tuned to the metric F1.
 
 ### KNN
 
-The first model that was generated was KNN. This model is initally gave some what seemed to be strange results when passing in non-transformed data.  There were both upward and downward trends within the data that was caused by low correlation between the different target classes that were being predicted.  Once the data was transformed, the overall performance of the model increased and the results were more consistent than before.
+The first model that was generated was KNN. This model is initally gave some what seemed to be strange results when passing in non-transformed data.  There were both upward and downward trends within the data that was caused by low correlation between the different target classes that were being predicted.  Once the data was transformed, the overall performance of the model increased and the trends present within were removed.
 
 ### Decision Trees 
 
-The best overall results within our Decision Tree Modeling utilized the following hyper parameters: `max_depth: 11` & `max_features: 12`. It is important to note that this tree did not have the highest score in each respective measure.  As different combinations were added, some measure increased, while others decreased. The decision was made to pick the tree with the smallest overall margin of change in the measures used.  
-
-We used an iterative process to find the best combination of these hyper parameters that would give us an optimum decision tree. Although there are many combinations of hyper parameters that could be used, we decided to only use max_depth and max_features, to simplify the project.
+The best overall results within our Decision Tree Modeling utilized the following hyper parameter(s): `max_features: 9`.  It is important to note that this tree did not have the highest score in each respective measure.  As different combinations were added, some measure increased while others decreased. The decision was made to pick the tree with the highest F1 score.  I found it interesting that the hyper-parameters picked by hand out performed the trees implemented with GridSearchCV.  My thoughts were that the trees implemented with GridSearchCV would have a higher F1 score, due to the bias inherited with the underlying Greedy Algorithm in Decision Trees.
 
 ### Support Vector Machine
 
-In the support vector machine, the decision was made to use GridSearchCV to find the best models. Upon initally creating the grid search, the code to find the best model took between 2-3 hours to complete.  That initial code was broken into 3 different pools and some of the hyper parameters used were reduced to reduce runtim eand find the most effective model, once the non-effective hyper parameters were removed.
+In the support vector machine, the decision was made to use GridSearchCV to find the best models. Upon initally creating the grid search, the code to find the best model took between 2-3 hours to complete.  That initial code was broken into 3 different pools with a respective range of hyper parameters to reduce runtime and find the most effective model.
 
 After tunning, the resulting models were very close, with the exception of that which came out of _Pool_1._
+
 This pool had the highest penalties applied during the GridSearch process.  The models that had lower penalties tend to out perform those with the higher ones. 
 
 ### Conclusion
 
-The Decision Tree that resulted from our hyper parameter tunning that gave the overall best performance and the most consistent results.  Our KNN Model has some very interesting results and unexpected results that were influenced by the scaling of the data. We were able to accurately predict a little over 85.7% of the data accurately, using Decision Trees, withouth losing much with the other metrics used.
+The Decision Tree that resulted from our hyper parameter tunning that gave the overall best performance and the most consistent results.  Our KNN Model has some very interesting results and unexpected results that were influenced by the scaling of the data. We were able to accurately predict a little over 85.7% of the data accurately, using Decision Trees, without losing much in the other metrics used.
 
-Although this seems like a good statistic, the drawback of using Decision Trees may not make it a strong option for comparing data that has few patters.
+Although this seems like a good statistic, the drawback of using Decision Trees may not make it a strong option for comparing data that has few patterns.
 
 
 ```python
@@ -2056,3 +2120,4 @@ Possible future addition, or editions, to this project include the following:
 * Pulling more recent data to see how demographics have increased over the years
 * Web scrapping with the census bureau website to automatically update the data used.
 * Using random forests instead of Decision Trees
+    * Although the decision trees performed the best, models produced by them thend to have a large amount of bias caused by the underlying Greedy Search Algorithm.
