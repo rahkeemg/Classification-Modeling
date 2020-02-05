@@ -2083,25 +2083,29 @@ The models used and selected were tuned to the metric F1.
 
 ### KNN
 
-The first model that was generated was KNN. This model is initally gave some what seemed to be strange results when passing in non-transformed data.  There were both upward and downward trends within the data that was caused by low correlation between the different target classes that were being predicted.  Once the data was transformed, the overall performance of the model increased and the trends present within were removed.
+The first model that was generated was KNN. This model is initally gave some what seemed to be strange results when passing in non-transformed data.  There were both upward and downward trends within the data that was caused by high correlation between the different target classes that were being predicted.  Once the data was transformed, the overall performance of the model increased and the trends present within were removed.
+
+The best model that came from this model came from our KNN model created using GridSearchCV.
 
 ### Decision Trees 
 
-The best overall results within our Decision Tree Modeling utilized the following hyper parameter(s): `max_features: 9`.  It is important to note that this tree did not have the highest score in each respective measure.  As different combinations were added, some measure increased while others decreased. The decision was made to pick the tree with the highest F1 score.  I found it interesting that the hyper-parameters picked by hand out performed the trees implemented with GridSearchCV.  My thoughts were that the trees implemented with GridSearchCV would have a higher F1 score, due to the bias inherited with the underlying Greedy Algorithm in Decision Trees.
+The best results within our Decision Tree Modeling came out of the hand_tuned trees utilizing `max_features` and `max_depth` hyper-parameters.
+
+It is important to note that this tree did not have the highest score in each respective measure.  As different combinations were added, some measure increased while others decreased. The decision was made to pick the tree with the highest F1 score.  This was done to get a tree that had a good balance of precision and recall.  I found it interesting that the hyper-parameters picked by hand out performed the trees implemented with GridSearchCV.  My my initial expectations were that the trees implemented with GridSearchCV would have a higher F1 score since it utilized a bigger combination and range of hyper parameters.
 
 ### Support Vector Machine
 
-In the support vector machine, the decision was made to use GridSearchCV to find the best models. Upon initally creating the grid search, the code to find the best model took between 2-3 hours to complete.  That initial code was broken into 3 different pools with a respective range of hyper parameters to reduce runtime and find the most effective model.
+The decision was made to use GridSearchCV to find the best models from the beginning. Upon initally creating the grid search, the code to find the best model took between 2-3 hours to complete.  That initial code was broken into 3 different pools with a respective range of hyper parameters to reduce runtime and find the most effective model.
 
 After tunning, the resulting models were very close, with the exception of that which came out of _Pool_1._
 
 This pool had the highest penalties applied during the GridSearch process.  The models that had lower penalties tend to out perform those with the higher ones. 
 
-### Conclusion
+# Conclusion
 
 The Decision Tree that resulted from our hyper parameter tunning that gave the overall best performance and the most consistent results.  Our KNN Model has some very interesting results and unexpected results that were influenced by the scaling of the data. We were able to accurately predict a little over 85.7% of the data accurately, using Decision Trees, without losing much in the other metrics used.
 
-Although this seems like a good statistic, the drawback of using Decision Trees may not make it a strong option for comparing data that has few patterns.
+Although this seems like a good statistic, the drawback of using Decision Trees may not make it a strong option for comparing data whose patterns greatly differ from the dataset used.
 
 
 ```python
