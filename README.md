@@ -18,6 +18,7 @@ For more information on the features available within the dataset, refer to the 
 </details>
 
 # Data Cleaning
+
 ### Import files
 <details>
 
@@ -782,10 +783,7 @@ plt.show()
 
 </details>
 
-# Classification modeling
-
-In this section, we will create classification models using K-nearest neighbors and Decision Tree models.
-
+# Modeling
 
 ### Setting up the data for modeling
 
