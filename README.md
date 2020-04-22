@@ -3,7 +3,7 @@
 # Abstract
 <details> 
 
-In this project, we will explore classification modeling using K-nearest neighbors (KNN), Decision Trees, and Support Vector Machines.  We will also be using GridSearchCV to find the best comibination of parameters to generate an optimum model amongst these types of models.
+In this project, we will explore classification modeling using K-nearest neighbors (KNN), Decision Trees, and Support Vector Machines (SVM).  We will also be using GridSearchCV to find the best combinations of parameters to generate an optimum model among these types of models.
   
 
 ### Dataset
